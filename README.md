@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-AVSYNTH is an example synth project designed to demonstrate the capabilities of the JUCE framework and modern C++
+EQlibrium is an example EQ project designed to demonstrate the capabilities of the JUCE framework and modern C++
 practices. The project is structured to provide a clear understanding of audio synthesis, plugin development, and
 cross-platform compatibility.
 
@@ -15,7 +15,7 @@ This project uses CMake as the primary build system. To build the project:
 1. Clone the repository.
 2. Navigate to the project root directory:
    ```bash
-   cd AVSYNTH
+   cd EQlibrium
    ```
 3. Create a build directory and navigate to it:
    ```bash
@@ -34,7 +34,7 @@ This project uses CMake as the primary build system. To build the project:
 
 ## Dependencies
 
-AVSYNTH relies on the following key dependencies:
+EQlibrium relies on the following key dependencies:
 
 1. **JUCE Framework**: For audio processing and UI management.
 2. **magig_enum**: A modern C++ library for enum handling.
