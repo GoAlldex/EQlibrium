@@ -52,9 +52,7 @@ juce_generate_juce_header(EQlibrium)
 target_sources(EQlibrium
         PRIVATE
         src/PluginEditor.cpp
-        src/PluginProcessor.cpp
-        src/WaveformComponent.cpp
-        src/Utils.cpp)
+        src/PluginProcessor.cpp)
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
 # project, these might be passed in the 'Preprocessor Definitions' field. JUCE modules also make use
