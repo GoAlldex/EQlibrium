@@ -20,21 +20,23 @@ FetchContent_MakeAvailable(magic_enum)
 add_subdirectory(extern/JUCE)
 
 juce_add_plugin(EQlibrium
-        # VERSION ...                               # Set this if the plugin version is different to the project version
-        # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
+        # VERSION ...
+        # ICON_BIG ...
         # ICON_SMALL ...
-        COMPANY_NAME "HSBI"                         # Specify the name of the plugin's author
-        IS_SYNTH TRUE                               # Is this a synth or an effect?
-        NEEDS_MIDI_INPUT TRUE                       # Does the plugin need midi input?
-        NEEDS_MIDI_OUTPUT FALSE                     # Does the plugin need midi output?
-        IS_MIDI_EFFECT FALSE                        # Is this plugin a MIDI effect?
-        EDITOR_WANTS_KEYBOARD_FOCUS FALSE           # Does the editor need keyboard focus?
-        COPY_PLUGIN_AFTER_BUILD TRUE                # Should the plugin be installed to a default location after building?
-        PLUGIN_MANUFACTURER_CODE Hsbi               # A four-character manufacturer id with at least one upper-case character
-        PLUGIN_CODE EQl                           # A unique four-character plugin id with exactly one upper-case character
+        COMPANY_NAME "Boostmeup GmbH"
+        IS_SYNTH FALSE
+        #MICROPHONE_PERMISSION_ENABLED TRUE
+        #BACKGROUND_AUDIO_ENABLED TRUE
+        NEEDS_MIDI_INPUT FALSE
+        NEEDS_MIDI_OUTPUT FALSE
+        IS_MIDI_EFFECT FALSE
+        EDITOR_WANTS_KEYBOARD_FOCUS FALSE
+        COPY_PLUGIN_AFTER_BUILD TRUE
+        PLUGIN_MANUFACTURER_CODE Boostmeup
+        PLUGIN_CODE Eqlm
         # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
-        FORMATS AU VST3 Standalone                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
-        PRODUCT_NAME "EQlibrium")    # The name of the final executable, which can differ from the target name
+        FORMATS AU VST3 Standalone
+        PRODUCT_NAME "EQlibrium")
 
 # `juce_generate_juce_header` will create a JuceHeader.h for a given target, which will be generated
 # into your build tree. This should be included with `#include <JuceHeader.h>`. The include path for
