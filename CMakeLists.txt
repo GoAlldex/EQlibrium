@@ -28,7 +28,7 @@ juce_add_plugin(EQlibrium
         IS_MIDI_EFFECT FALSE
         EDITOR_WANTS_KEYBOARD_FOCUS FALSE
         COPY_PLUGIN_AFTER_BUILD TRUE
-        PLUGIN_MANUFACTURER_CODE Boostmeup
+        PLUGIN_MANUFACTURER_CODE Bsmp
         PLUGIN_CODE Eqlm
         # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
         FORMATS AU VST3 Standalone
@@ -52,6 +52,9 @@ target_compile_definitions(EQlibrium
 target_link_libraries(EQlibrium
         PRIVATE
         juce::juce_audio_utils
+        juce::juce_audio_processors
+        juce::juce_gui_extra
+        juce::juce_events
         juce::juce_dsp
         PUBLIC
         juce::juce_recommended_config_flags
