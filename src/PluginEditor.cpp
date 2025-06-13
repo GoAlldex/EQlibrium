@@ -2,42 +2,45 @@
 #include "PluginProcessor.hpp"
 #include "PluginEditor.hpp"
 
-//==============================================================================
-EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p),
-    peakFreqSliderAttachment(audioProcessor.apvts, "Peak Freq", peakFreqSlider),
-    peakGainSliderAttachment(audioProcessor.apvts, "Peak Gain", peakGainSlider),
-    peakQualitySliderAttachment(audioProcessor.apvts, "Peak Quality", peakQualitySlider),
-    lowCutFreqSliderAttachment(audioProcessor.apvts, "LowCut Freq", lowCutFreqSlider),
-    lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCut Slope", lowCutSlopeSlider),
-    highCutFreqSliderAttachment(audioProcessor.apvts, "HighCut Freq", highCutFreqSlider),
-    highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCut Slope", highCutSlopeSlider) {
-    for(auto* comp : getComps()) {
-        addAndMakeVisible(comp);
-    }
+ResponseCurveComponent::ResponseCurveComponent(EQlibriumAudioProcessor& p) : audioProcessor(p) {
     const auto& params = audioProcessor.getParameters();
     for(auto param : params) {
         param->addListener(this);
     }
     startTimerHz(60);
-    setSize (920, 1035);
 }
-EQlibriumAudioProcessorEditor::~EQlibriumAudioProcessorEditor() {
+
+ResponseCurveComponent::~ResponseCurveComponent() {
     const auto& params = audioProcessor.getParameters();
     for(auto param : params) {
         param->removeListener(this);
     }
 }
 
-//==============================================================================
-void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
+void ResponseCurveComponent::parameterValueChanged(int parameterIndex, float newValue) {
+    parametersChanged.set(true);
+}
+
+void ResponseCurveComponent::timerCallback() {
+    if(parametersChanged.compareAndSetBool(false, true)) {
+        auto chainSettings = getChainSettings(audioProcessor.apvts);
+        auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
+        updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+        auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
+        auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
+        updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
+        updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
+        repaint();
+    }
+}
+
+void ResponseCurveComponent::paint (juce::Graphics& g) {
     using namespace juce;
     Colour bgColour = Colour(50,50,50);
     Colour visualBGColour = Colour(25,25,25);
     Colour visualLineColour = Colour(51,51,255);
     g.fillAll(bgColour);
-    auto bounds = getLocalBounds();
-    auto responseArea = bounds.removeFromTop(bounds.getHeight()*0.33);
+    auto responseArea = getLocalBounds();
     auto w = responseArea.getWidth();
     auto h = responseArea.getHeight();
     auto& lowcut = monoChain.get<ChainPositions::LowCut>();
@@ -97,9 +100,31 @@ void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
     g.strokePath(responseCurve, PathStrokeType(2.f));
 }
 
+//==============================================================================
+EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProcessor& p)
+    : AudioProcessorEditor (&p), audioProcessor (p),
+    responseCurveComponent(audioProcessor),
+    peakFreqSliderAttachment(audioProcessor.apvts, "Peak Freq", peakFreqSlider),
+    peakGainSliderAttachment(audioProcessor.apvts, "Peak Gain", peakGainSlider),
+    peakQualitySliderAttachment(audioProcessor.apvts, "Peak Quality", peakQualitySlider),
+    lowCutFreqSliderAttachment(audioProcessor.apvts, "LowCut Freq", lowCutFreqSlider),
+    lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCut Slope", lowCutSlopeSlider),
+    highCutFreqSliderAttachment(audioProcessor.apvts, "HighCut Freq", highCutFreqSlider),
+    highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCut Slope", highCutSlopeSlider) {
+    for(auto* comp : getComps()) {
+        addAndMakeVisible(comp);
+    }
+    setSize (920, 1035);
+}
+EQlibriumAudioProcessorEditor::~EQlibriumAudioProcessorEditor() { }
+
+//==============================================================================
+void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) { }
+
 void EQlibriumAudioProcessorEditor::resized() {
     auto bounds = getLocalBounds();
     auto responseArea = bounds.removeFromTop(bounds.getHeight()*0.33);
+    responseCurveComponent.setBounds(responseArea);
     auto lowCutArea = bounds.removeFromLeft(bounds.getHeight()*0.33);
     auto highCutArea = bounds.removeFromRight(bounds.getHeight()*0.5);
     lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()*0.5));
@@ -111,23 +136,6 @@ void EQlibriumAudioProcessorEditor::resized() {
     peakQualitySlider.setBounds(bounds);
 }
 
-void EQlibriumAudioProcessorEditor::parameterValueChanged(int parameterIndex, float newValue) {
-    parametersChanged.set(true);
-}
-
-void EQlibriumAudioProcessorEditor::timerCallback() {
-    if(parametersChanged.compareAndSetBool(false, true)) {
-        auto chainSettings = getChainSettings(audioProcessor.apvts);
-        auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
-        updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
-        auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
-        auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
-        updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
-        updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
-        repaint();
-    }
-}
-
 std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
 {
     return {
@@ -137,6 +145,7 @@ std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
         &lowCutFreqSlider,
         &highCutFreqSlider,
         &lowCutSlopeSlider,
-        &highCutSlopeSlider
+        &highCutSlopeSlider,
+        &responseCurveComponent
     };
 }
