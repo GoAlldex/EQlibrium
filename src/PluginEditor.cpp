@@ -82,6 +82,30 @@ void RotarySliderWithLabels::paint(juce::Graphics &g){
         endAng,
         *this
     );
+    auto center = sliderBounds.toFloat().getCentre();
+    auto radius = sliderBounds.getWidth()*0.5f;
+    g.setColour(Colours::white);
+    g.setFont(getTextHeight());
+    auto numChoices = labels.size();
+    for(int i = 0; i < numChoices; i++) {
+        auto pos = labels[i].pos;
+        jassert(0.f <= pos);
+        jassert(pos <= 1.f);
+        auto ang = jmap(
+            pos,
+            0.f,
+            1.f,
+            startAng,
+            endAng
+        );
+        auto c = center.getPointOnCircumference(radius+getTextHeight()*0.5f+1, ang);
+        Rectangle<float> r;
+        auto str = labels[i].label;
+        r.setSize(g.getCurrentFont().getStringWidth(str), getTextHeight());
+        r.setCentre(c);
+        r.setY(r.getY()+getTextHeight());
+        g.drawFittedText(str, r.toNearestInt(), juce::Justification::centred, 1);
+    }
 }
 
 juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const {
@@ -127,6 +151,7 @@ ResponseCurveComponent::ResponseCurveComponent(EQlibriumAudioProcessor& p) : aud
     for(auto param : params) {
         param->addListener(this);
     }
+    updateChain();
     startTimerHz(60);
 }
 
@@ -143,16 +168,21 @@ void ResponseCurveComponent::parameterValueChanged(int parameterIndex, float new
 
 void ResponseCurveComponent::timerCallback() {
     if(parametersChanged.compareAndSetBool(false, true)) {
-        auto chainSettings = getChainSettings(audioProcessor.apvts);
-        auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
-        updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
-        auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
-        auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
-        updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
-        updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
+        updateChain();
         repaint();
     }
 }
+
+void ResponseCurveComponent::updateChain() {
+    auto chainSettings = getChainSettings(audioProcessor.apvts);
+    auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
+    updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+    auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
+    auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
+    updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
+    updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
+}
+
 
 void ResponseCurveComponent::paint (juce::Graphics& g) {
     using namespace juce;
@@ -238,6 +268,20 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCut Slope", lowCutSlopeSlider),
     highCutFreqSliderAttachment(audioProcessor.apvts, "HighCut Freq", highCutFreqSlider),
     highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCut Slope", highCutSlopeSlider) {
+    peakFreqSlider.labels.add({0.f, "20Hz"});
+    peakFreqSlider.labels.add({1.f, "20kHz"});
+    peakGainSlider.labels.add({0.f, "-24dB"});
+    peakGainSlider.labels.add({1.f, "+24dB"});
+    peakQualitySlider.labels.add({0.f, "0.1"});
+    peakQualitySlider.labels.add({1.f, "10"});
+    lowCutFreqSlider.labels.add({0.f, "20Hz"});
+    lowCutFreqSlider.labels.add({1.f, "20kHz"});
+    highCutFreqSlider.labels.add({0.f, "20Hz"});
+    highCutFreqSlider.labels.add({1.f, "20kHz"});
+    lowCutSlopeSlider.labels.add({0.f, "12"});
+    lowCutSlopeSlider.labels.add({1.f, "48"});
+    highCutSlopeSlider.labels.add({0.f, "12"});
+    highCutSlopeSlider.labels.add({1.f, "48"});
     for(auto* comp : getComps()) {
         addAndMakeVisible(comp);
     }
@@ -250,23 +294,19 @@ void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) { }
 
 void EQlibriumAudioProcessorEditor::resized() {
     auto bounds = getLocalBounds();
-    auto responseArea = bounds.removeFromTop(bounds.getHeight()*0.33);
+    float hRatio = 25.f/100.f;
+    auto responseArea = bounds.removeFromTop(bounds.getHeight()*hRatio);
     responseCurveComponent.setBounds(responseArea);
-    auto lowCutArea = bounds.removeFromLeft(bounds.getHeight()*0.33);
-    auto highCutArea = bounds.removeFromRight(bounds.getHeight()*0.33);
-    lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()*0.33));
+    bounds.removeFromTop(5);
+    auto lowCutArea = bounds.removeFromLeft(bounds.getWidth()*0.33);
+    auto highCutArea = bounds.removeFromRight(bounds.getWidth()*0.5);
+    lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()*0.5));
     lowCutSlopeSlider.setBounds(lowCutArea);
-    highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()*0.33));
+    highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()*0.5));
     highCutSlopeSlider.setBounds(highCutArea);
-    auto peakFreqArea = bounds.removeFromBottom(bounds.getHeight()*0.33);
-    auto peakGainArea = bounds.removeFromTop(bounds.getHeight()*0.33);
-    auto peakQualityArea = bounds.removeFromTop(bounds.getHeight()*0.33);
     peakFreqSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.33));
-    peakFreqSlider.setBounds(peakFreqArea);
-    peakGainSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.33));
-    peakGainSlider.setBounds(peakGainArea);
-    peakQualitySlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.33));
-    peakQualitySlider.setBounds(peakQualityArea);
+    peakGainSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.5));
+    peakQualitySlider.setBounds(bounds);
 }
 
 std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
