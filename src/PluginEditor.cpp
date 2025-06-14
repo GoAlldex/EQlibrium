@@ -13,11 +13,14 @@ void LookAndFeel::drawRotarySlider(
     float rotaryEndAngle,
     juce::Slider & slider) {
     using namespace juce;
+    Colour rotaryBGColour = Colour(25,25,25);
+    Colour rotaryPosColour = Colour(51,51,255);
     auto bounds = Rectangle<float>(x, y, width, height);
-    g.setColour(Colour(25u,25u,25u));
+    g.setColour(rotaryBGColour);
     g.fillEllipse(bounds);
-    g.setColour(Colour(0u,0u,0u));
+    g.setColour(Colours::black);
     g.drawEllipse(bounds, 0.1f);
+    g.setColour(rotaryPosColour);
     auto center = bounds.getCentre();
     Path p;
     Rectangle<float> r;
@@ -46,6 +49,10 @@ void RotarySliderWithLabels::paint(juce::Graphics &g){
     auto endAng = degreesToRadians(180.f-45.f)+MathConstants<float>::twoPi;
     auto range = getRange();
     auto sliderBounds = getSliderBounds();
+    g.setColour(Colours::red);
+    g.drawRect(getLocalBounds());
+    g.setColour(Colours::yellow);
+    g.drawRect(sliderBounds);
     getLookAndFeel().drawRotarySlider(
         g,
         sliderBounds.getX(),
@@ -66,7 +73,14 @@ void RotarySliderWithLabels::paint(juce::Graphics &g){
 }
 
 juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const {
-    return getLocalBounds();
+    auto bounds = getLocalBounds();
+    auto size = juce::jmin(bounds.getWidth(), bounds.getHeight());
+    size -= getTextHeight()*2;
+    juce::Rectangle<int> r;
+    r.setSize(size, size);
+    r.setCentre(bounds.getCentreX(), 0);
+    r.setY(2);
+    return r;
 }
 
 //==============================================================================
@@ -201,14 +215,20 @@ void EQlibriumAudioProcessorEditor::resized() {
     auto responseArea = bounds.removeFromTop(bounds.getHeight()*0.33);
     responseCurveComponent.setBounds(responseArea);
     auto lowCutArea = bounds.removeFromLeft(bounds.getHeight()*0.33);
-    auto highCutArea = bounds.removeFromRight(bounds.getHeight()*0.5);
-    lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()*0.5));
+    auto highCutArea = bounds.removeFromRight(bounds.getHeight()*0.33);
+    lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()*0.33));
     lowCutSlopeSlider.setBounds(lowCutArea);
-    highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()*0.5));
+    highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()*0.33));
     highCutSlopeSlider.setBounds(highCutArea);
+    auto peakFreqArea = bounds.removeFromBottom(bounds.getHeight()*0.33);
+    auto peakGainArea = bounds.removeFromTop(bounds.getHeight()*0.33);
+    auto peakQualityArea = bounds.removeFromTop(bounds.getHeight()*0.33);
     peakFreqSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.33));
-    peakGainSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.5));
-    peakQualitySlider.setBounds(bounds);
+    peakFreqSlider.setBounds(peakFreqArea);
+    peakGainSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.33));
+    peakGainSlider.setBounds(peakGainArea);
+    peakQualitySlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.33));
+    peakQualitySlider.setBounds(peakQualityArea);
 }
 
 std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
