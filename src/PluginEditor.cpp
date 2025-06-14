@@ -61,10 +61,10 @@ void RotarySliderWithLabels::paint(juce::Graphics &g){
     auto endAng = degreesToRadians(180.f-45.f)+MathConstants<float>::twoPi;
     auto range = getRange();
     auto sliderBounds = getSliderBounds();
-    g.setColour(Colours::red);
+    /*g.setColour(Colours::red);
     g.drawRect(getLocalBounds());
     g.setColour(Colours::yellow);
-    g.drawRect(sliderBounds);
+    g.drawRect(sliderBounds);*/
     getLookAndFeel().drawRotarySlider(
         g,
         sliderBounds.getX(),
@@ -96,7 +96,29 @@ juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const {
 }
 
 juce::String RotarySliderWithLabels::getDisplayString() const {
-    return juce::String(getValue());
+    if(auto* choiceParam = dynamic_cast<juce::AudioParameterChoice*>(param)) {
+        return choiceParam->getCurrentChoiceName();
+    }
+    juce::String str;
+    bool addK = false;
+    if(auto* floatParam = dynamic_cast<juce::AudioParameterFloat*>(param)) {
+        float val = getValue();
+        if(val > 999.f) {
+            val /= 1000.f;
+            addK = true;
+        }
+        str = juce::String(val, (addK ? 2 : 0));
+    } else {
+        jassertfalse;
+    }
+    if(suffix.isNotEmpty()) {
+        str << " ";
+        if(addK) {
+            str << "k";
+        }
+        str << suffix;
+    }
+    return str;
 }
 
 //==============================================================================
