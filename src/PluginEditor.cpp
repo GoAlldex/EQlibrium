@@ -190,7 +190,8 @@ void ResponseCurveComponent::paint (juce::Graphics& g) {
     Colour visualBGColour = Colour(25,25,25);
     Colour visualLineColour = Colour(51,51,255);
     g.fillAll(bgColour);
-    auto responseArea = getLocalBounds();
+    //auto responseArea = getLocalBounds();
+    auto responseArea = getRenderArea();
     auto w = responseArea.getWidth();
     auto h = responseArea.getHeight();
     auto& lowcut = monoChain.get<ChainPositions::LowCut>();
@@ -246,9 +247,69 @@ void ResponseCurveComponent::paint (juce::Graphics& g) {
     g.fillRect(responseArea.toFloat());
     g.setColour(Colours::black);
     g.drawRect(responseArea.toFloat(), 0.1f);
+    g.drawImage(background, getLocalBounds().toFloat());
     g.setColour(visualLineColour);
     g.strokePath(responseCurve, PathStrokeType(2.f));
 }
+
+void ResponseCurveComponent::resized() {
+    using namespace juce;
+    background = Image(Image::PixelFormat::RGB, getWidth(), getHeight(), true);
+    Graphics g(background);
+    Array<float> freqs {
+        20, 30, 40, 50, 100,
+        200, 300, 400, 500, 1000,
+        2000, 3000, 4000, 5000, 10000,
+        20000
+    };
+    auto renderArea = getAnalysisArea();
+    auto left = renderArea.getX();
+    auto right = renderArea.getRight();
+    auto top = renderArea.getY();
+    auto bottom = renderArea.getBottom();
+    auto width = renderArea.getWidth();
+    Array<float> xs;
+    for(auto f : freqs) {
+        auto normX = mapFromLog10(f, 20.f, 20000.f);
+        xs.add(left+width*normX);
+    }
+    g.setColour(Colours::dimgrey);
+    for(auto x : xs) {
+        g.drawVerticalLine(x, top, bottom);
+    }
+    /*for(auto f : freqs) {
+        auto normX = mapFromLog10(f, 20.f, 20000.f);
+        g.drawVerticalLine(getWidth()*normX, 0.f, getHeight());
+    }*/
+    Array<float> gain {
+        -24, -23, 0, 12, 24
+    };
+    for(auto gDb : gain) {
+        auto y = jmap(gDb, -24.f, 24.f, float(bottom), float(top));
+        //g.drawHorizontalLine(y, 0, getWidth());
+        g.setColour(gDb == 0.f ? Colours::red : Colours::darkgrey);
+        g.drawHorizontalLine(y, left, right);
+    }
+    //g.drawRect(getRenderArea());
+}
+
+juce::Rectangle<int> ResponseCurveComponent::getRenderArea() {
+    auto bounds = getLocalBounds();
+    //bounds.reduce(10, 10);
+    /*bounds.removeFromTop(12);
+    bounds.removeFromBottom(2);
+    bounds.removeFromLeft(20);
+    bounds.removeFromRight(20);*/
+    return bounds;
+}
+
+juce::Rectangle<int> ResponseCurveComponent::getAnalysisArea() {
+    auto bounds = getRenderArea();
+    bounds.removeFromTop(4);
+    bounds.removeFromBottom(4);
+    return bounds;
+}
+
 
 //==============================================================================
 EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProcessor& p)
