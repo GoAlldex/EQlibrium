@@ -76,7 +76,7 @@ struct AnalyzerPathGenerator {
             jassert(!std::isnan(y) && !std::isinf(y));
             if(!std::isnan(y) && !std::isinf(y)) {
                 auto binFreq = binNum*binWidth;
-                auto normalizedBinX = juce::mapFromLog10(binFreq, 1.f, 20000.f);
+                auto normalizedBinX = juce::mapFromLog10(binFreq, 20.f, 20000.f);
                 int binX = std::floor(normalizedBinX*width);
                 p.lineTo(binX,y);
             }
@@ -134,6 +134,22 @@ private:
     juce::String suffix;
 };
 
+struct PathProducer {
+    PathProducer(SingleChannelSampleFifo<EQlibriumAudioProcessor::BlockType>& scsf) :
+    leftChannelFifo(&scsf) {
+        leftChannelFFTDataGenerator.changeOrder(order4096);
+        monoBuffer.setSize(1, leftChannelFFTDataGenerator.getFFTSize());
+    }
+    void process(juce::Rectangle<float> fftBounds, double sampleRate);
+    juce::Path getPath() { return leftChannelFFTPath; }
+private:
+    SingleChannelSampleFifo<EQlibriumAudioProcessor::BlockType>* leftChannelFifo;
+    juce::AudioBuffer<float> monoBuffer;
+    FFTDataGenerator<std::vector<float>> leftChannelFFTDataGenerator;
+    AnalyzerPathGenerator<juce::Path> pathProducer;
+    juce::Path leftChannelFFTPath;
+};
+
 struct ResponseCurveComponent: juce::Component,
 juce::AudioProcessorParameter::Listener,
 juce::Timer {
@@ -152,13 +168,7 @@ private:
     juce::Image background;
     juce::Rectangle<int> getRenderArea();
     juce::Rectangle<int> getAnalysisArea();
-    SingleChannelSampleFifo<EQlibriumAudioProcessor::BlockType>* leftChannelFifo;
-    juce::AudioBuffer<float> monoBuffer;
-    FFTDataGenerator<std::vector<float>> leftChannelFFTDataGenerator;
-    AnalyzerPathGenerator<juce::Path> pathProducer;
-    juce::Path leftChannelFFTPath;
-    //SingleChannelSampleFifo<EQlibriumAudioProcessor::BlockType>* rightChannelFifo;
-
+    PathProducer leftPathProducer, rightPathProducer;
 };
 
 //==============================================================================
