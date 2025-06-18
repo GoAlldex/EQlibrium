@@ -53,6 +53,8 @@ target_link_libraries(EQlibrium
         PRIVATE
         juce::juce_audio_utils
         juce::juce_audio_processors
+        juce::juce_core
+        juce::juce_audio_basics
         juce::juce_gui_extra
         juce::juce_events
         juce::juce_dsp
