@@ -203,6 +203,12 @@ public:
     juce::Rectangle<int> window_vumeter_rect;
     juce::Rectangle<int> window_vumeter_left_rect;
     juce::Rectangle<int> window_vumeter_right_rect;
+    juce::Rectangle<int> peakL;
+    juce::Rectangle<int> peakR;
+    juce::Rectangle<int> highCutL;
+    juce::Rectangle<int> highCutR;
+    juce::Rectangle<int> lowCutL;
+    juce::Rectangle<int> lowCutR;
 private:
     EQlibriumAudioProcessor& audioProcessor;
     RotarySliderWithLabels peakFreqSliderLeft,

@@ -61,10 +61,8 @@ void RotarySliderWithLabels::paint(juce::Graphics &g){
     auto endAng = degreesToRadians(180.f-45.f)+MathConstants<float>::twoPi;
     auto range = getRange();
     auto sliderBounds = getSliderBounds();
-    /*g.setColour(Colours::red);
-    g.drawRect(getLocalBounds());
-    g.setColour(Colours::yellow);
-    g.drawRect(sliderBounds);*/
+    /*g.setColour(Colours::black);
+    g.drawRect(getLocalBounds().toFloat(), 0.3f);*/
     getLookAndFeel().drawRotarySlider(
         g,
         sliderBounds.getX(),
@@ -480,8 +478,9 @@ EQlibriumAudioProcessorEditor::~EQlibriumAudioProcessorEditor() { }
 
 //==============================================================================
 void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
+    using namespace juce;
+    /*
     // DEBUG LAYOUT
-    /*using namespace juce;
     // Show layout
     g.setColour(Colours::red);
     g.drawRect(window_micro_rect.toFloat(), 0.1f);
@@ -509,6 +508,23 @@ void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
     g.setColour(Colours::white);
     g.drawRect(window_analyser_left_freq_rect.toFloat(), 0.1f);
     g.drawRect(window_analyser_right_freq_rect.toFloat(), 0.1f);*/
+    Colour bgColour = Colour(50,50,50);
+    Colour lineColour = Colour(25,25,25);
+    g.setColour(bgColour);
+    g.fillRect(getLocalBounds());
+    g.setColour(lineColour);
+    g.drawRect(window_micro_rect.toFloat(), 0.3f);
+    g.drawRect(window_settings_rect.toFloat(), 0.3f);
+    g.drawRect(peakL.toFloat(), 0.3f);
+    //g.drawRect(peakR.toFloat(), 0.3f);
+    g.drawRect(highCutL.toFloat(), 0.3f);
+    //g.drawRect(highCutR.toFloat(), 0.3f);
+    g.drawRect(lowCutL.toFloat(), 0.3f);
+    //g.drawRect(lowCutR.toFloat(), 0.3f);
+    g.fillRect(window_analyser_left_filter_rect);
+    g.fillRect(window_analyser_right_filter_rect);
+    g.fillRect(window_analyser_left_freq_rect);
+    g.fillRect(window_analyser_right_freq_rect);
 }
 
 void EQlibriumAudioProcessorEditor::resized() {
@@ -577,19 +593,25 @@ void EQlibriumAudioProcessorEditor::resized() {
     window_vumeter_right_rect.removeFromRight(6);
     // Set left
     auto filterLeftH = window_filter_left_rect.getHeight();
-    auto peakL = window_filter_left_rect.removeFromTop(filterLeftH/3);
-    auto peakWL = peakL.getWidth();
-    peakFreqSliderLeft.setBounds(peakL.removeFromLeft(peakWL/3));
-    peakGainSliderLeft.setBounds(peakL.removeFromRight(peakWL/3));
-    peakQualitySliderLeft.setBounds(peakL.removeFromRight(peakWL/3));
-    auto highCutL = window_filter_left_rect.removeFromTop(filterLeftH/3);
-    auto highCutWL = highCutL.getWidth();
-    highCutFreqSliderLeft.setBounds(highCutL.removeFromLeft(highCutWL/2));
-    highCutSlopeSliderLeft.setBounds(highCutL.removeFromLeft(highCutWL/2));
-    auto lowCutL = window_filter_left_rect.removeFromTop(filterLeftH/3);
-    auto lowCutWL = lowCutL.getWidth();
-    lowCutFreqSliderLeft.setBounds(lowCutL.removeFromLeft(lowCutWL/2));
-    lowCutSlopeSliderLeft.setBounds(lowCutL.removeFromLeft(lowCutWL/2));
+    peakL = window_filter_left_rect.removeFromTop(filterLeftH/3);
+    peakL.removeFromBottom(3);
+    auto peakLD = juce::Rectangle(7, 270, peakL.getWidth()-2, peakL.getHeight()-2);
+    auto peakWL = peakLD.getWidth();
+    peakFreqSliderLeft.setBounds(peakLD.removeFromLeft(peakWL/3));
+    peakGainSliderLeft.setBounds(peakLD.removeFromRight(peakWL/3));
+    peakQualitySliderLeft.setBounds(peakLD.removeFromRight(peakWL/3));
+    highCutL = window_filter_left_rect.removeFromTop(filterLeftH/3);
+    highCutL.removeFromBottom(3);
+    auto highCutLD = juce::Rectangle(7, 372, highCutL.getWidth()-2, highCutL.getHeight()-2);
+    auto highCutWL = highCutLD.getWidth();
+    highCutFreqSliderLeft.setBounds(highCutLD.removeFromLeft(highCutWL/2));
+    highCutSlopeSliderLeft.setBounds(highCutLD.removeFromLeft(highCutWL/2));
+    lowCutL = window_filter_left_rect.removeFromTop(filterLeftH/3);
+    lowCutL.removeFromBottom(3);
+    auto lowCutLD = juce::Rectangle(7, 474, lowCutL.getWidth()-2, lowCutL.getHeight()-2);
+    auto lowCutWL = lowCutLD.getWidth();
+    lowCutFreqSliderLeft.setBounds(lowCutLD.removeFromLeft(lowCutWL/2));
+    lowCutSlopeSliderLeft.setBounds(lowCutLD.removeFromLeft(lowCutWL/2));
     filterLeft.setCurveComponent(0);
     //filterRight.setCurveComponent(2);
     freqLeft.setCurveComponent(1);
