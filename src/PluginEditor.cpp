@@ -426,7 +426,7 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     for(auto* comp : getComps()) {
         addAndMakeVisible(comp);
     }
-    setSize (1000, 600);
+    setSize (1000, 1000);
 }
 EQlibriumAudioProcessorEditor::~EQlibriumAudioProcessorEditor() { }
 
@@ -436,24 +436,24 @@ void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
     using namespace juce;
     // Show layout
     g.setColour(Colours::red);
-    g.drawRect(window_micro_rect.toFloat(), 1.f);
+    g.drawRect(window_micro_rect.toFloat(), 0.1f);
     g.setColour(Colours::red);
-    g.drawRect(window_settings_rect.toFloat(), 1.f);
+    g.drawRect(window_settings_rect.toFloat(), 0.1f);
     g.setColour(Colours::red);
-    g.drawRect(window_filter_rect.toFloat(), 1.f);
+    g.drawRect(window_filter_rect.toFloat(), 0.1f);
     g.setColour(Colours::red);
-    g.drawRect(window_analyser_rect.toFloat(), 1.f);
+    g.drawRect(window_analyser_rect.toFloat(), 0.1f);
     g.setColour(Colours::red);
-    g.drawRect(window_vumeter_rect.toFloat(), 1.f);
+    g.drawRect(window_vumeter_rect.toFloat(), 0.1f);
     // Show channel split
     g.setColour(Colours::green);
-    g.drawRect(window_filter_left_rect.toFloat(), 1.f);
-    g.drawRect(window_analyser_left_rect.toFloat(), 1.f);
-    g.drawRect(window_vumeter_left_rect.toFloat(), 1.f);
+    g.drawRect(window_filter_left_rect.toFloat(), 0.1f);
+    g.drawRect(window_analyser_left_rect.toFloat(), 0.1f);
+    g.drawRect(window_vumeter_left_rect.toFloat(), 0.1f);
     g.setColour(Colours::blue);
-    g.drawRect(window_filter_right_rect.toFloat(), 1.f);
-    g.drawRect(window_analyser_right_rect.toFloat(), 1.f);
-    g.drawRect(window_vumeter_right_rect.toFloat(), 1.f);
+    g.drawRect(window_filter_right_rect.toFloat(), 0.1f);
+    g.drawRect(window_analyser_right_rect.toFloat(), 0.1f);
+    g.drawRect(window_vumeter_right_rect.toFloat(), 0.1f);
 }
 
 void EQlibriumAudioProcessorEditor::resized() {
@@ -511,20 +511,22 @@ void EQlibriumAudioProcessorEditor::resized() {
     window_vumeter_right_rect.removeFromBottom(6);
     window_vumeter_right_rect.removeFromLeft(3);
     window_vumeter_right_rect.removeFromRight(6);
-    /*auto bounds = getLocalBounds();
-    float hRatio = 25.f/100.f;
-    auto responseArea = bounds.removeFromTop(bounds.getHeight()*hRatio);
-    responseCurveComponent.setBounds(responseArea);
-    bounds.removeFromTop(5);
-    auto lowCutArea = bounds.removeFromLeft(bounds.getWidth()*0.33);
-    auto highCutArea = bounds.removeFromRight(bounds.getWidth()*0.5);
-    lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()*0.5));
-    lowCutSlopeSlider.setBounds(lowCutArea);
-    highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()*0.5));
-    highCutSlopeSlider.setBounds(highCutArea);
-    peakFreqSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.33));
-    peakGainSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.5));
-    peakQualitySlider.setBounds(bounds);*/
+    // Set left
+    auto filterLeftH = window_filter_left_rect.getHeight();
+    auto peakL = window_filter_left_rect.removeFromTop(filterLeftH/3);
+    auto peakWL = peakL.getWidth();
+    peakFreqSlider.setBounds(peakL.removeFromLeft(peakWL/3));
+    peakGainSlider.setBounds(peakL.removeFromRight(peakWL/3));
+    peakQualitySlider.setBounds(peakL.removeFromRight(peakWL/3));
+    auto highCutL = window_filter_left_rect.removeFromTop(filterLeftH/3);
+    auto highCutWL = highCutL.getWidth();
+    highCutFreqSlider.setBounds(highCutL.removeFromLeft(highCutWL/2));
+    highCutSlopeSlider.setBounds(highCutL.removeFromLeft(highCutWL/2));
+    auto lowCutL = window_filter_left_rect.removeFromTop(filterLeftH/3);
+    auto lowCutWL = lowCutL.getWidth();
+    lowCutFreqSlider.setBounds(lowCutL.removeFromLeft(lowCutWL/2));
+    lowCutSlopeSlider.setBounds(lowCutL.removeFromLeft(lowCutWL/2));
+    responseCurveComponent.setBounds(window_analyser_left_rect);
 }
 
 std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
