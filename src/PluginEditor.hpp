@@ -136,18 +136,18 @@ private:
 
 struct PathProducer {
     PathProducer(SingleChannelSampleFifo<EQlibriumAudioProcessor::BlockType>& scsf) :
-    leftChannelFifo(&scsf) {
-        leftChannelFFTDataGenerator.changeOrder(order4096);
-        monoBuffer.setSize(1, leftChannelFFTDataGenerator.getFFTSize());
+    ChannelFifo(&scsf) {
+        ChannelFFTDataGenerator.changeOrder(order4096);
+        monoBuffer.setSize(1, ChannelFFTDataGenerator.getFFTSize());
     }
     void process(juce::Rectangle<float> fftBounds, double sampleRate);
-    juce::Path getPath() { return leftChannelFFTPath; }
+    juce::Path getPath() { return ChannelFFTPath; }
 private:
-    SingleChannelSampleFifo<EQlibriumAudioProcessor::BlockType>* leftChannelFifo;
+    SingleChannelSampleFifo<EQlibriumAudioProcessor::BlockType>* ChannelFifo;
     juce::AudioBuffer<float> monoBuffer;
-    FFTDataGenerator<std::vector<float>> leftChannelFFTDataGenerator;
+    FFTDataGenerator<std::vector<float>> ChannelFFTDataGenerator;
     AnalyzerPathGenerator<juce::Path> pathProducer;
-    juce::Path leftChannelFFTPath;
+    juce::Path ChannelFFTPath;
 };
 
 struct ResponseCurveComponent: juce::Component,
@@ -160,6 +160,11 @@ juce::Timer {
     void timerCallback() override;
     void paint(juce::Graphics& g) override;
     void resized() override;
+    void setCurveComponent(int cc) { curveComponent = cc; }
+    void paintLeftFilter(juce::Graphics& g, juce::Rectangle<int> &responseArea, int w, int h, std::vector<double> &mags);
+    void paintRightFilter(juce::Graphics& g, juce::Rectangle<int> &responseArea, int w, int h, std::vector<double> &mags);
+    void paintLeftFreq(juce::Graphics& g, juce::Rectangle<int> &responseArea, int w, int h, std::vector<double> &mags);
+    void paintRightFreq(juce::Graphics& g, juce::Rectangle<int> &responseArea, int w, int h, std::vector<double> &mags);
 private:
     EQlibriumAudioProcessor& audioProcessor;
     juce::Atomic<bool> parametersChanged { false };
@@ -169,6 +174,7 @@ private:
     juce::Rectangle<int> getRenderArea();
     juce::Rectangle<int> getAnalysisArea();
     PathProducer leftPathProducer, rightPathProducer;
+    int curveComponent;
 };
 
 //==============================================================================
@@ -189,20 +195,24 @@ public:
     juce::Rectangle<int> window_filter_right_rect;
     juce::Rectangle<int> window_analyser_rect;
     juce::Rectangle<int> window_analyser_left_rect;
+    juce::Rectangle<int> window_analyser_left_filter_rect;
+    juce::Rectangle<int> window_analyser_left_freq_rect;
     juce::Rectangle<int> window_analyser_right_rect;
+    juce::Rectangle<int> window_analyser_right_filter_rect;
+    juce::Rectangle<int> window_analyser_right_freq_rect;
     juce::Rectangle<int> window_vumeter_rect;
     juce::Rectangle<int> window_vumeter_left_rect;
     juce::Rectangle<int> window_vumeter_right_rect;
 private:
     EQlibriumAudioProcessor& audioProcessor;
-    RotarySliderWithLabels peakFreqSlider,
-        peakGainSlider,
-        peakQualitySlider,
-        lowCutFreqSlider,
-        highCutFreqSlider,
-        lowCutSlopeSlider,
-        highCutSlopeSlider;
-    ResponseCurveComponent responseCurveComponent;
+    RotarySliderWithLabels peakFreqSliderLeft,
+        peakGainSliderLeft,
+        peakQualitySliderLeft,
+        lowCutFreqSliderLeft,
+        highCutFreqSliderLeft,
+        lowCutSlopeSliderLeft,
+        highCutSlopeSliderLeft;
+    ResponseCurveComponent filterLeft, freqLeft;
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
     Attachment peakFreqSliderAttachment,

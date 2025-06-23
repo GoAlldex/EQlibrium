@@ -171,8 +171,8 @@ void ResponseCurveComponent::parameterValueChanged(int parameterIndex, float new
 
 void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate) {
     juce::AudioBuffer<float> tempIncomingBuffer;
-    while(leftChannelFifo->getNumCompleteBuffersAvailable() > 0) {
-        if(leftChannelFifo->getAudioBuffer(tempIncomingBuffer)) {
+    while(ChannelFifo->getNumCompleteBuffersAvailable() > 0) {
+        if(ChannelFifo->getAudioBuffer(tempIncomingBuffer)) {
             auto size = tempIncomingBuffer.getNumSamples();
             juce::FloatVectorOperations::copy(
                 monoBuffer.getWritePointer(0, 0),
@@ -184,15 +184,15 @@ void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate) 
                 tempIncomingBuffer.getReadPointer(0, 0),
                 size
             );
-            leftChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer, -48.f);
+            ChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer, -48.f);
         }
     }
 
-    const auto fftSize = leftChannelFFTDataGenerator.getFFTSize();
+    const auto fftSize = ChannelFFTDataGenerator.getFFTSize();
     const auto binWidth = sampleRate/(double)fftSize;
-    while(leftChannelFFTDataGenerator.getNumAvailableFFTDataBlocks() > 0) {
+    while(ChannelFFTDataGenerator.getNumAvailableFFTDataBlocks() > 0) {
         std::vector<float> fftData;
-        if(leftChannelFFTDataGenerator.getFFTData(fftData)) {
+        if(ChannelFFTDataGenerator.getFFTData(fftData)) {
             pathProducer.generatePath(
                 fftData,
                 fftBounds,
@@ -203,7 +203,7 @@ void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate) 
         }
     }
     while(pathProducer.getNumPathsAvailable()) {
-        pathProducer.getPath(leftChannelFFTPath);
+        pathProducer.getPath(ChannelFFTPath);
     }
 }
 
@@ -228,15 +228,68 @@ void ResponseCurveComponent::updateChain() {
     updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
 }
 
-
-void ResponseCurveComponent::paint (juce::Graphics& g) {
+void ResponseCurveComponent::paintLeftFilter(juce::Graphics& g, juce::Rectangle<int> &responseArea, int w, int h, std::vector<double> &mags) {
     using namespace juce;
-    Colour bgColour = Colour(50,50,50);
     Colour visualBGColour = Colour(25,25,25);
     Colour visualLineColour = Colour(51,51,255);
-    g.fillAll(bgColour);
+    Path responseCurve;
+    const double outputMin = responseArea.getBottom();
+    const double outputMax = responseArea.getY();
+    auto map = [outputMin, outputMax] (double input) {
+        return jmap(input, -24.0, 24.0, outputMin, outputMax);
+    };
+    responseCurve.startNewSubPath(responseArea.getX(), map(mags.front()));
+    for(size_t i = 1; i < mags.size(); i++)
+    {
+        responseCurve.lineTo(responseArea.getX()+i, map(mags[i]));
+    }
+    g.setColour(visualLineColour);
+    g.strokePath(responseCurve, PathStrokeType(2.f));
+}
+
+void ResponseCurveComponent::paintRightFilter(juce::Graphics& g, juce::Rectangle<int> &responseArea, int w, int h, std::vector<double> &mags) {
+    using namespace juce;
+    Colour visualBGColour = Colour(25,25,25);
+    Colour visualLineColour = Colour(51,51,255);
+    Path responseCurve;
+    const double outputMin = responseArea.getBottom();
+    const double outputMax = responseArea.getY();
+    auto map = [outputMin, outputMax] (double input) {
+        return jmap(input, -24.0, 24.0, outputMin, outputMax);
+    };
+    responseCurve.startNewSubPath(responseArea.getX(), map(mags.front()));
+    for(size_t i = 1; i < mags.size(); i++)
+    {
+        responseCurve.lineTo(responseArea.getX()+i, map(mags[i]));
+    }
+    g.setColour(visualLineColour);
+    g.strokePath(responseCurve, PathStrokeType(2.f));
+}
+
+void ResponseCurveComponent::paintLeftFreq(juce::Graphics& g, juce::Rectangle<int> &responseArea, int w, int h, std::vector<double> &mags) {
+    using namespace juce;
+    Colour visualBGColour = Colour(25,25,25);
+    Colour visualLineColour = Colour(51,51,255);
+    auto leftChannelFFTPath = leftPathProducer.getPath();
+    leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY()));
+    g.setColour(visualLineColour);
+    g.strokePath(leftChannelFFTPath, PathStrokeType(2.f));
+}
+
+void ResponseCurveComponent::paintRightFreq(juce::Graphics& g, juce::Rectangle<int> &responseArea, int w, int h, std::vector<double> &mags) {
+    using namespace juce;
+    Colour visualBGColour = Colour(25,25,25);
+    Colour visualLineColour = Colour(51,51,255);
+    auto rightChannelFFTPath = rightPathProducer.getPath();
+    rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY()));
+    g.setColour(visualLineColour);
+    g.strokePath(rightChannelFFTPath, PathStrokeType(2.f));
+}
+
+void ResponseCurveComponent::paint(juce::Graphics& g) {
+    using namespace juce;
+    g.fillAll(Colour(50,50,50));
     auto responseArea = getLocalBounds();
-    //auto responseArea = getRenderArea();
     auto w = responseArea.getWidth();
     auto h = responseArea.getHeight();
     auto& lowcut = monoChain.get<ChainPositions::LowCut>();
@@ -277,38 +330,32 @@ void ResponseCurveComponent::paint (juce::Graphics& g) {
         }
         mags[i] = Decibels::gainToDecibels(mag);
     }
-    Path responseCurve;
-    const double outputMin = responseArea.getBottom();
-    const double outputMax = responseArea.getY();
-    auto map = [outputMin, outputMax] (double input) {
-        return jmap(input, -24.0, 24.0, outputMin, outputMax);
-    };
-    responseCurve.startNewSubPath(responseArea.getX(), map(mags.front()));
-    for(size_t i = 1; i < mags.size(); i++)
-    {
-        responseCurve.lineTo(responseArea.getX()+i, map(mags[i]));
-    }
-    auto leftChannelFFTPath = leftPathProducer.getPath();
-    leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY()));
-    auto rightChannelFFTPath = leftPathProducer.getPath();
-    rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY()));
-    g.setColour(visualBGColour);
-    g.fillRect(responseArea.toFloat());
-    g.setColour(Colours::black);
-    g.drawRect(responseArea.toFloat(), 0.1f);
     g.drawImage(background, getLocalBounds().toFloat());
-    g.setColour(Colours::red);
-    g.strokePath(leftChannelFFTPath, PathStrokeType(1));
-    g.setColour(Colours::yellow);
-    g.strokePath(rightChannelFFTPath, PathStrokeType(1));
-    g.setColour(visualLineColour);
-    g.strokePath(responseCurve, PathStrokeType(2.f));
+    switch(curveComponent) {
+        default:
+        break;
+        case 0:
+            paintLeftFilter(g, responseArea, w, h, mags);
+        break;
+        case 1:
+            paintLeftFreq(g, responseArea, w, h, mags);
+        break;
+        case 2:
+            paintRightFilter(g, responseArea, w, h, mags);
+        break;
+        case 3:
+            paintRightFreq(g, responseArea, w, h, mags);
+        break;
+    }
 }
 
 void ResponseCurveComponent::resized() {
     using namespace juce;
     background = Image(Image::PixelFormat::RGB, getWidth(), getHeight(), true);
     Graphics g(background);
+    Colour bgColour = Colour(25,25,25);
+    g.setColour(bgColour);
+    g.fillRect(background.getBounds());
     Array<float> freqs {
         20, 50, 100,
         200, 500, 1000,
@@ -394,35 +441,36 @@ juce::Rectangle<int> ResponseCurveComponent::getAnalysisArea() {
 //==============================================================================
 EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p),
-    peakFreqSlider(*audioProcessor.apvts.getParameter("Peak Freq"), "Hz"),
-    peakGainSlider(*audioProcessor.apvts.getParameter("Peak Gain"), "dB"),
-    peakQualitySlider(*audioProcessor.apvts.getParameter("Peak Quality"), ""),
-    lowCutFreqSlider(*audioProcessor.apvts.getParameter("LowCut Freq"), "Hz"),
-    lowCutSlopeSlider(*audioProcessor.apvts.getParameter("LowCut Slope"), "dB/Okt"),
-    highCutFreqSlider(*audioProcessor.apvts.getParameter("HighCut Freq"), "Hz"),
-    highCutSlopeSlider(*audioProcessor.apvts.getParameter("HighCut Slope"), "dB/Okt"),
-    responseCurveComponent(audioProcessor),
-    peakFreqSliderAttachment(audioProcessor.apvts, "Peak Freq", peakFreqSlider),
-    peakGainSliderAttachment(audioProcessor.apvts, "Peak Gain", peakGainSlider),
-    peakQualitySliderAttachment(audioProcessor.apvts, "Peak Quality", peakQualitySlider),
-    lowCutFreqSliderAttachment(audioProcessor.apvts, "LowCut Freq", lowCutFreqSlider),
-    lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCut Slope", lowCutSlopeSlider),
-    highCutFreqSliderAttachment(audioProcessor.apvts, "HighCut Freq", highCutFreqSlider),
-    highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCut Slope", highCutSlopeSlider) {
-    peakFreqSlider.labels.add({0.f, "20Hz"});
-    peakFreqSlider.labels.add({1.f, "20kHz"});
-    peakGainSlider.labels.add({0.f, "-24dB"});
-    peakGainSlider.labels.add({1.f, "+24dB"});
-    peakQualitySlider.labels.add({0.f, "0.1"});
-    peakQualitySlider.labels.add({1.f, "10"});
-    lowCutFreqSlider.labels.add({0.f, "20Hz"});
-    lowCutFreqSlider.labels.add({1.f, "20kHz"});
-    highCutFreqSlider.labels.add({0.f, "20Hz"});
-    highCutFreqSlider.labels.add({1.f, "20kHz"});
-    lowCutSlopeSlider.labels.add({0.f, "12"});
-    lowCutSlopeSlider.labels.add({1.f, "48"});
-    highCutSlopeSlider.labels.add({0.f, "12"});
-    highCutSlopeSlider.labels.add({1.f, "48"});
+    peakFreqSliderLeft(*audioProcessor.apvts.getParameter("Peak Freq"), "Hz"),
+    peakGainSliderLeft(*audioProcessor.apvts.getParameter("Peak Gain"), "dB"),
+    peakQualitySliderLeft(*audioProcessor.apvts.getParameter("Peak Quality"), ""),
+    lowCutFreqSliderLeft(*audioProcessor.apvts.getParameter("LowCut Freq"), "Hz"),
+    lowCutSlopeSliderLeft(*audioProcessor.apvts.getParameter("LowCut Slope"), "dB/Okt"),
+    highCutFreqSliderLeft(*audioProcessor.apvts.getParameter("HighCut Freq"), "Hz"),
+    highCutSlopeSliderLeft(*audioProcessor.apvts.getParameter("HighCut Slope"), "dB/Okt"),
+    filterLeft(audioProcessor),
+    freqLeft(audioProcessor),
+    peakFreqSliderAttachment(audioProcessor.apvts, "Peak Freq", peakFreqSliderLeft),
+    peakGainSliderAttachment(audioProcessor.apvts, "Peak Gain", peakGainSliderLeft),
+    peakQualitySliderAttachment(audioProcessor.apvts, "Peak Quality", peakQualitySliderLeft),
+    lowCutFreqSliderAttachment(audioProcessor.apvts, "LowCut Freq", lowCutFreqSliderLeft),
+    lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCut Slope", lowCutSlopeSliderLeft),
+    highCutFreqSliderAttachment(audioProcessor.apvts, "HighCut Freq", highCutFreqSliderLeft),
+    highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCut Slope", highCutSlopeSliderLeft) {
+    peakFreqSliderLeft.labels.add({0.f, "20Hz"});
+    peakFreqSliderLeft.labels.add({1.f, "20kHz"});
+    peakGainSliderLeft.labels.add({0.f, "-24dB"});
+    peakGainSliderLeft.labels.add({1.f, "+24dB"});
+    peakQualitySliderLeft.labels.add({0.f, "0.1"});
+    peakQualitySliderLeft.labels.add({1.f, "10"});
+    lowCutFreqSliderLeft.labels.add({0.f, "20Hz"});
+    lowCutFreqSliderLeft.labels.add({1.f, "20kHz"});
+    highCutFreqSliderLeft.labels.add({0.f, "20Hz"});
+    highCutFreqSliderLeft.labels.add({1.f, "20kHz"});
+    lowCutSlopeSliderLeft.labels.add({0.f, "12"});
+    lowCutSlopeSliderLeft.labels.add({1.f, "48"});
+    highCutSlopeSliderLeft.labels.add({0.f, "12"});
+    highCutSlopeSliderLeft.labels.add({1.f, "48"});
     for(auto* comp : getComps()) {
         addAndMakeVisible(comp);
     }
@@ -433,7 +481,7 @@ EQlibriumAudioProcessorEditor::~EQlibriumAudioProcessorEditor() { }
 //==============================================================================
 void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
     // DEBUG LAYOUT
-    using namespace juce;
+    /*using namespace juce;
     // Show layout
     g.setColour(Colours::red);
     g.drawRect(window_micro_rect.toFloat(), 0.1f);
@@ -454,6 +502,13 @@ void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
     g.drawRect(window_filter_right_rect.toFloat(), 0.1f);
     g.drawRect(window_analyser_right_rect.toFloat(), 0.1f);
     g.drawRect(window_vumeter_right_rect.toFloat(), 0.1f);
+    // Show graph split
+    g.setColour(Colours::white);
+    g.drawRect(window_analyser_left_filter_rect.toFloat(), 0.1f);
+    g.drawRect(window_analyser_right_filter_rect.toFloat(), 0.1f);
+    g.setColour(Colours::white);
+    g.drawRect(window_analyser_left_freq_rect.toFloat(), 0.1f);
+    g.drawRect(window_analyser_right_freq_rect.toFloat(), 0.1f);*/
 }
 
 void EQlibriumAudioProcessorEditor::resized() {
@@ -499,6 +554,15 @@ void EQlibriumAudioProcessorEditor::resized() {
     window_analyser_right_rect.removeFromBottom(3);
     window_analyser_right_rect.removeFromLeft(3);
     window_analyser_right_rect.removeFromRight(6);
+    // Analyzer split filter and frequency graph
+    window_analyser_left_filter_rect = window_analyser_left_rect.removeFromTop(window_analyser_left_rect.getHeight()/2);
+    window_analyser_left_filter_rect.removeFromBottom(3);
+    window_analyser_left_freq_rect = window_analyser_left_rect.removeFromTop(window_analyser_left_rect.getHeight());
+    window_analyser_left_freq_rect.removeFromTop(3);
+    window_analyser_right_filter_rect = window_analyser_right_rect.removeFromTop(window_analyser_right_rect.getHeight()/2);
+    window_analyser_right_filter_rect.removeFromBottom(3);
+    window_analyser_right_freq_rect = window_analyser_right_rect.removeFromTop(window_analyser_right_rect.getHeight());
+    window_analyser_right_freq_rect.removeFromTop(3);
     // L/R channel splitted uv-meter rects
     window_vumeter_left_rect = window_vumeter_rect.removeFromLeft(window_vumeter_rect.getWidth()/2);
     window_vumeter_right_rect = window_vumeter_rect.removeFromLeft(window_vumeter_rect.getWidth());
@@ -515,30 +579,38 @@ void EQlibriumAudioProcessorEditor::resized() {
     auto filterLeftH = window_filter_left_rect.getHeight();
     auto peakL = window_filter_left_rect.removeFromTop(filterLeftH/3);
     auto peakWL = peakL.getWidth();
-    peakFreqSlider.setBounds(peakL.removeFromLeft(peakWL/3));
-    peakGainSlider.setBounds(peakL.removeFromRight(peakWL/3));
-    peakQualitySlider.setBounds(peakL.removeFromRight(peakWL/3));
+    peakFreqSliderLeft.setBounds(peakL.removeFromLeft(peakWL/3));
+    peakGainSliderLeft.setBounds(peakL.removeFromRight(peakWL/3));
+    peakQualitySliderLeft.setBounds(peakL.removeFromRight(peakWL/3));
     auto highCutL = window_filter_left_rect.removeFromTop(filterLeftH/3);
     auto highCutWL = highCutL.getWidth();
-    highCutFreqSlider.setBounds(highCutL.removeFromLeft(highCutWL/2));
-    highCutSlopeSlider.setBounds(highCutL.removeFromLeft(highCutWL/2));
+    highCutFreqSliderLeft.setBounds(highCutL.removeFromLeft(highCutWL/2));
+    highCutSlopeSliderLeft.setBounds(highCutL.removeFromLeft(highCutWL/2));
     auto lowCutL = window_filter_left_rect.removeFromTop(filterLeftH/3);
     auto lowCutWL = lowCutL.getWidth();
-    lowCutFreqSlider.setBounds(lowCutL.removeFromLeft(lowCutWL/2));
-    lowCutSlopeSlider.setBounds(lowCutL.removeFromLeft(lowCutWL/2));
-    responseCurveComponent.setBounds(window_analyser_left_rect);
+    lowCutFreqSliderLeft.setBounds(lowCutL.removeFromLeft(lowCutWL/2));
+    lowCutSlopeSliderLeft.setBounds(lowCutL.removeFromLeft(lowCutWL/2));
+    filterLeft.setCurveComponent(0);
+    //filterRight.setCurveComponent(2);
+    freqLeft.setCurveComponent(1);
+    //freqRight.setCurveComponent(3);
+    filterLeft.setBounds(window_analyser_left_filter_rect);
+    //filterRight.setBounds(window_analyser_right_filter_rect);
+    freqLeft.setBounds(window_analyser_left_freq_rect);
+    //freqRight.setBounds(window_analyser_right_freq_rect);
 }
 
 std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
 {
     return {
-        &peakFreqSlider,
-        &peakGainSlider,
-        &peakQualitySlider,
-        &lowCutFreqSlider,
-        &highCutFreqSlider,
-        &lowCutSlopeSlider,
-        &highCutSlopeSlider,
-        &responseCurveComponent
+        &peakFreqSliderLeft,
+        &peakGainSliderLeft,
+        &peakQualitySliderLeft,
+        &lowCutFreqSliderLeft,
+        &highCutFreqSliderLeft,
+        &lowCutSlopeSliderLeft,
+        &highCutSlopeSliderLeft,
+        &filterLeft,
+        &freqLeft
     };
 }
