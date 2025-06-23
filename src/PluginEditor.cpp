@@ -426,15 +426,92 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     for(auto* comp : getComps()) {
         addAndMakeVisible(comp);
     }
-    setSize (920, 1035);
+    setSize (1000, 600);
 }
 EQlibriumAudioProcessorEditor::~EQlibriumAudioProcessorEditor() { }
 
 //==============================================================================
-void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) { }
+void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
+    // DEBUG LAYOUT
+    using namespace juce;
+    // Show layout
+    g.setColour(Colours::red);
+    g.drawRect(window_micro_rect.toFloat(), 1.f);
+    g.setColour(Colours::red);
+    g.drawRect(window_settings_rect.toFloat(), 1.f);
+    g.setColour(Colours::red);
+    g.drawRect(window_filter_rect.toFloat(), 1.f);
+    g.setColour(Colours::red);
+    g.drawRect(window_analyser_rect.toFloat(), 1.f);
+    g.setColour(Colours::red);
+    g.drawRect(window_vumeter_rect.toFloat(), 1.f);
+    // Show channel split
+    g.setColour(Colours::green);
+    g.drawRect(window_filter_left_rect.toFloat(), 1.f);
+    g.drawRect(window_analyser_left_rect.toFloat(), 1.f);
+    g.drawRect(window_vumeter_left_rect.toFloat(), 1.f);
+    g.setColour(Colours::blue);
+    g.drawRect(window_filter_right_rect.toFloat(), 1.f);
+    g.drawRect(window_analyser_right_rect.toFloat(), 1.f);
+    g.drawRect(window_vumeter_right_rect.toFloat(), 1.f);
+}
 
 void EQlibriumAudioProcessorEditor::resized() {
-    auto bounds = getLocalBounds();
+    window_full_rect = getLocalBounds();
+    auto h = window_full_rect.getHeight();
+    // Categorized places
+    window_micro_rect = window_full_rect.removeFromTop(h/6);
+    window_settings_rect = window_full_rect.removeFromTop(h/10);
+    window_filter_rect = window_full_rect.removeFromTop(h*19/30/2);
+    window_analyser_rect = window_full_rect.removeFromTop(h*19/30/2);
+    window_vumeter_rect = window_full_rect.removeFromTop(h/10);
+    // Padding and margin micro rect
+    window_micro_rect.removeFromTop(6);
+    window_micro_rect.removeFromBottom(3);
+    window_micro_rect.removeFromLeft(6);
+    window_micro_rect.removeFromRight(6);
+    // Padding and margin settings rect
+    window_settings_rect.removeFromTop(3);
+    window_settings_rect.removeFromBottom(3);
+    window_settings_rect.removeFromLeft(6);
+    window_settings_rect.removeFromRight(6);
+    // L/R channel splitted filter rects
+    window_filter_left_rect = window_filter_rect.removeFromLeft(window_filter_rect.getWidth()/2);
+    window_filter_right_rect = window_filter_rect.removeFromLeft(window_filter_rect.getWidth());
+    // Padding and margin filter rects
+    window_filter_left_rect.removeFromTop(3);
+    window_filter_left_rect.removeFromBottom(3);
+    window_filter_left_rect.removeFromLeft(6);
+    window_filter_left_rect.removeFromRight(3);
+    window_filter_right_rect.removeFromTop(3);
+    window_filter_right_rect.removeFromBottom(3);
+    window_filter_right_rect.removeFromLeft(3);
+    window_filter_right_rect.removeFromRight(6);
+    // L/R channel splitted analyser rects
+    window_analyser_left_rect = window_analyser_rect.removeFromLeft(window_analyser_rect.getWidth()/2);
+    window_analyser_right_rect = window_analyser_rect.removeFromLeft(window_analyser_rect.getWidth());
+    // Padding and margin analyser rects
+    window_analyser_left_rect.removeFromTop(3);
+    window_analyser_left_rect.removeFromBottom(3);
+    window_analyser_left_rect.removeFromLeft(6);
+    window_analyser_left_rect.removeFromRight(3);
+    window_analyser_right_rect.removeFromTop(3);
+    window_analyser_right_rect.removeFromBottom(3);
+    window_analyser_right_rect.removeFromLeft(3);
+    window_analyser_right_rect.removeFromRight(6);
+    // L/R channel splitted uv-meter rects
+    window_vumeter_left_rect = window_vumeter_rect.removeFromLeft(window_vumeter_rect.getWidth()/2);
+    window_vumeter_right_rect = window_vumeter_rect.removeFromLeft(window_vumeter_rect.getWidth());
+    // Padding and margin uv-meter rects
+    window_vumeter_left_rect.removeFromTop(3);
+    window_vumeter_left_rect.removeFromBottom(6);
+    window_vumeter_left_rect.removeFromLeft(6);
+    window_vumeter_left_rect.removeFromRight(3);
+    window_vumeter_right_rect.removeFromTop(3);
+    window_vumeter_right_rect.removeFromBottom(6);
+    window_vumeter_right_rect.removeFromLeft(3);
+    window_vumeter_right_rect.removeFromRight(6);
+    /*auto bounds = getLocalBounds();
     float hRatio = 25.f/100.f;
     auto responseArea = bounds.removeFromTop(bounds.getHeight()*hRatio);
     responseCurveComponent.setBounds(responseArea);
@@ -447,7 +524,7 @@ void EQlibriumAudioProcessorEditor::resized() {
     highCutSlopeSlider.setBounds(highCutArea);
     peakFreqSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.33));
     peakGainSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.5));
-    peakQualitySlider.setBounds(bounds);
+    peakQualitySlider.setBounds(bounds);*/
 }
 
 std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()

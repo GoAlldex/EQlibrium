@@ -179,9 +179,20 @@ public:
     ~EQlibriumAudioProcessorEditor() override;
 
     //==============================================================================
-    void paint (juce::Graphics&) override;
+    void paint(juce::Graphics&) override;
     void resized() override;
-
+    juce::Rectangle<int> window_full_rect;
+    juce::Rectangle<int> window_micro_rect;
+    juce::Rectangle<int> window_settings_rect;
+    juce::Rectangle<int> window_filter_rect;
+    juce::Rectangle<int> window_filter_left_rect;
+    juce::Rectangle<int> window_filter_right_rect;
+    juce::Rectangle<int> window_analyser_rect;
+    juce::Rectangle<int> window_analyser_left_rect;
+    juce::Rectangle<int> window_analyser_right_rect;
+    juce::Rectangle<int> window_vumeter_rect;
+    juce::Rectangle<int> window_vumeter_left_rect;
+    juce::Rectangle<int> window_vumeter_right_rect;
 private:
     EQlibriumAudioProcessor& audioProcessor;
     RotarySliderWithLabels peakFreqSlider,
