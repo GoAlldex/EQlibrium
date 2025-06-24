@@ -135,31 +135,50 @@ void EQlibriumAudioProcessor::setStateInformation (const void* data, int sizeInB
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts) {
     ChainSettings settings;
-    settings.lowCutFreq = apvts.getRawParameterValue("LowCut Freq")->load();
-    settings.highCutFreq = apvts.getRawParameterValue("HighCut Freq")->load();
-    settings.peakFreq = apvts.getRawParameterValue("Peak Freq")->load();
-    settings.peakGainInDecibels = apvts.getRawParameterValue("Peak Gain")->load();
-    settings.peakQuality = apvts.getRawParameterValue("Peak Quality")->load();
-    settings.lowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("LowCut Slope")->load());
-    settings.highCutSlope = static_cast<Slope>(apvts.getRawParameterValue("HighCut Slope")->load());
+    settings.leftLowCutFreq = apvts.getRawParameterValue("Left LowCut Freq")->load();
+    settings.leftHighCutFreq = apvts.getRawParameterValue("Left HighCut Freq")->load();
+    settings.leftPeakFreq = apvts.getRawParameterValue("Left Peak Freq")->load();
+    settings.leftPeakGainInDecibels = apvts.getRawParameterValue("Left Peak Gain")->load();
+    settings.leftPeakQuality = apvts.getRawParameterValue("Left Peak Quality")->load();
+    settings.leftLowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("Left LowCut Slope")->load());
+    settings.leftHighCutSlope = static_cast<Slope>(apvts.getRawParameterValue("Left HighCut Slope")->load());
+    settings.rightLowCutFreq = apvts.getRawParameterValue("Right LowCut Freq")->load();
+    settings.rightHighCutFreq = apvts.getRawParameterValue("Right HighCut Freq")->load();
+    settings.rightPeakFreq = apvts.getRawParameterValue("Right Peak Freq")->load();
+    settings.rightPeakGainInDecibels = apvts.getRawParameterValue("Right Peak Gain")->load();
+    settings.rightPeakQuality = apvts.getRawParameterValue("Right Peak Quality")->load();
+    settings.rightLowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("Right LowCut Slope")->load());
+    settings.rightHighCutSlope = static_cast<Slope>(apvts.getRawParameterValue("Right HighCut Slope")->load());
     return settings;
 }
 
-Coefficients makePeakFilter(const ChainSettings& chainSettings, double sampleRate) {
+Coefficients makeLeftPeakFilter(const ChainSettings& chainSettings, double sampleRate) {
     return juce::dsp::IIR::Coefficients<float>::makePeakFilter(
         sampleRate,
-        chainSettings.peakFreq,
-        chainSettings.peakQuality,
+        chainSettings.leftPeakFreq,
+        chainSettings.leftPeakQuality,
         juce::Decibels::decibelsToGain(
-            chainSettings.peakGainInDecibels
+            chainSettings.leftPeakGainInDecibels
+        )
+    );
+}
+
+Coefficients makeRightPeakFilter(const ChainSettings& chainSettings, double sampleRate) {
+    return juce::dsp::IIR::Coefficients<float>::makePeakFilter(
+        sampleRate,
+        chainSettings.rightPeakFreq,
+        chainSettings.rightPeakQuality,
+        juce::Decibels::decibelsToGain(
+            chainSettings.rightPeakGainInDecibels
         )
     );
 }
 
 void EQlibriumAudioProcessor::updatePeakFilter(const ChainSettings &chainSettings) {
-    auto peakCoefficients = makePeakFilter(chainSettings, getSampleRate());
-    updateCoefficients(leftChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
-    updateCoefficients(rightChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+    auto leftPeakCoefficients = makeLeftPeakFilter(chainSettings, getSampleRate());
+    auto rightPeakCoefficients = makeRightPeakFilter(chainSettings, getSampleRate());
+    updateCoefficients(leftChain.get<Peak>().coefficients, leftPeakCoefficients);
+    updateCoefficients(rightChain.get<Peak>().coefficients, rightPeakCoefficients);
 }
 
 void updateCoefficients(Coefficients &old, const Coefficients &replacements) {
@@ -167,19 +186,21 @@ void updateCoefficients(Coefficients &old, const Coefficients &replacements) {
 }
 
 void EQlibriumAudioProcessor::updateLowCutFilters(const ChainSettings& chainSettings) {
-    auto lowCutCoefficients = makeLowCutFilter(chainSettings, getSampleRate());
+    auto leftLowCutCoefficients = makeLeftLowCutFilter(chainSettings, getSampleRate());
+    auto rightLowCutCoefficients = makeRightLowCutFilter(chainSettings, getSampleRate());
     auto& leftLowCut = leftChain.get<LowCut>();
     auto& rightLowCut = rightChain.get<LowCut>();
-    updateCutFilter(leftLowCut, lowCutCoefficients, chainSettings.lowCutSlope);
-    updateCutFilter(rightLowCut, lowCutCoefficients, chainSettings.lowCutSlope);
+    updateCutFilter(leftLowCut, leftLowCutCoefficients, chainSettings.leftLowCutSlope);
+    updateCutFilter(rightLowCut, rightLowCutCoefficients, chainSettings.rightLowCutSlope);
 }
 
 void EQlibriumAudioProcessor::updateHighCutFilters(const ChainSettings& chainSettings) {
-    auto highCutCoefficients = makeHighCutFilter(chainSettings, getSampleRate());
-    auto& leftHighCut = leftChain.get<ChainPositions::HighCut>();
-    auto& rightHighCut = rightChain.get<ChainPositions::HighCut>();
-    updateCutFilter(leftHighCut, highCutCoefficients, chainSettings.highCutSlope);
-    updateCutFilter(rightHighCut, highCutCoefficients, chainSettings.highCutSlope);
+    auto leftHighCutCoefficients = makeLeftHighCutFilter(chainSettings, getSampleRate());
+    auto rightHighCutCoefficients = makeRightHighCutFilter(chainSettings, getSampleRate());
+    auto& leftHighCut = leftChain.get<HighCut>();
+    auto& rightHighCut = rightChain.get<HighCut>();
+    updateCutFilter(leftHighCut, leftHighCutCoefficients, chainSettings.leftHighCutSlope);
+    updateCutFilter(rightHighCut, rightHighCutCoefficients, chainSettings.rightHighCutSlope);
 }
 
 void EQlibriumAudioProcessor::updateFilters() {
@@ -192,28 +213,28 @@ void EQlibriumAudioProcessor::updateFilters() {
 juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::createParameterLayout() {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        "LowCut Freq",
-        "LowCut Freq",
+        "Left LowCut Freq",
+        "Left LowCut Freq",
         juce::NormalisableRange<float>(20.f,20000.f,1.f,0.25f),
         20.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        "HighCut Freq",
-        "HighCut Freq",
+        "Left HighCut Freq",
+        "Left HighCut Freq",
         juce::NormalisableRange<float>(20.f,20000.f,1.f,0.25f),
         20000.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        "Peak Freq",
-        "Peak Freq",
+        "Left Peak Freq",
+        "Left Peak Freq",
         juce::NormalisableRange<float>(20.f,20000.f,1.f,0.25f),
         750.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        "Peak Gain",
-        "Peak Gain",
+        "Left Peak Gain",
+        "Left Peak Gain",
         juce::NormalisableRange<float>(-24.f,24.f,0.5f,1.f),
         0.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        "Peak Quality",
-        "Peak Quality",
+        "Left Peak Quality",
+        "Left Peak Quality",
         juce::NormalisableRange<float>(0.1f,10.f,0.05f,1.f),
         1.f));
     juce::StringArray stringArray;
@@ -223,8 +244,36 @@ juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::cre
         str << "db/Oct";
         stringArray.add(str);
     }
-    layout.add(std::make_unique<juce::AudioParameterChoice>("LowCut Slope", "LowCut Slope", stringArray, 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("HighCut Slope", "HighCut Slope", stringArray, 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("Left LowCut Slope", "Left LowCut Slope", stringArray, 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("Left HighCut Slope", "Left HighCut Slope", stringArray, 0));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        "Right LowCut Freq",
+        "Right LowCut Freq",
+        juce::NormalisableRange<float>(20.f,20000.f,1.f,0.25f),
+        20.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        "Right HighCut Freq",
+        "Right HighCut Freq",
+        juce::NormalisableRange<float>(20.f,20000.f,1.f,0.25f),
+        20000.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        "Right Peak Freq",
+        "Right Peak Freq",
+        juce::NormalisableRange<float>(20.f,20000.f,1.f,0.25f),
+        750.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        "Right Peak Gain",
+        "Right Peak Gain",
+        juce::NormalisableRange<float>(-24.f,24.f,0.5f,1.f),
+        0.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        "Right Peak Quality",
+        "Right Peak Quality",
+        juce::NormalisableRange<float>(0.1f,10.f,0.05f,1.f),
+        1.f));
+
+    layout.add(std::make_unique<juce::AudioParameterChoice>("Right LowCut Slope", "Right LowCut Slope", stringArray, 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("Right HighCut Slope", "Right HighCut Slope", stringArray, 0));
     return layout;
 }
 

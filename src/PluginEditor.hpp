@@ -163,6 +163,7 @@ juce::Timer {
     void setCurveComponent(int cc) { curveComponent = cc; }
     void paintLeftFilter(juce::Graphics& g, juce::Rectangle<int> &responseArea, int w, int h, std::vector<double> &mags);
     void paintRightFilter(juce::Graphics& g, juce::Rectangle<int> &responseArea, int w, int h, std::vector<double> &mags);
+    //void paintFreq(juce::Graphics& g, juce::Rectangle<int> &responseArea, int w, int h, std::vector<double> &mags);
     void paintLeftFreq(juce::Graphics& g, juce::Rectangle<int> &responseArea, int w, int h, std::vector<double> &mags);
     void paintRightFreq(juce::Graphics& g, juce::Rectangle<int> &responseArea, int w, int h, std::vector<double> &mags);
 private:
@@ -217,17 +218,31 @@ private:
         lowCutFreqSliderLeft,
         highCutFreqSliderLeft,
         lowCutSlopeSliderLeft,
-        highCutSlopeSliderLeft;
-    ResponseCurveComponent filterLeft, freqLeft;
+        highCutSlopeSliderLeft,
+        peakFreqSliderRight,
+        peakGainSliderRight,
+        peakQualitySliderRight,
+        lowCutFreqSliderRight,
+        highCutFreqSliderRight,
+        lowCutSlopeSliderRight,
+        highCutSlopeSliderRight;
+    ResponseCurveComponent filterLeft, freqLeft, filterRight, freqRight;
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
-    Attachment peakFreqSliderAttachment,
-        peakGainSliderAttachment,
-        peakQualitySliderAttachment,
-        lowCutFreqSliderAttachment,
-        highCutFreqSliderAttachment,
-        lowCutSlopeSliderAttachment,
-        highCutSlopeSliderAttachment;
+    Attachment leftPeakFreqSliderAttachment,
+        leftPeakGainSliderAttachment,
+        leftPeakQualitySliderAttachment,
+        leftLowCutFreqSliderAttachment,
+        leftHighCutFreqSliderAttachment,
+        leftLowCutSlopeSliderAttachment,
+        leftHighCutSlopeSliderAttachment,
+        rightPeakFreqSliderAttachment,
+        rightPeakGainSliderAttachment,
+        rightPeakQualitySliderAttachment,
+        rightLowCutFreqSliderAttachment,
+        rightHighCutFreqSliderAttachment,
+        rightLowCutSlopeSliderAttachment,
+        rightHighCutSlopeSliderAttachment;
     std::vector<Component*> getComps();
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQlibriumAudioProcessorEditor)
 };
