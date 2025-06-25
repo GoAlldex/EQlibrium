@@ -61,6 +61,7 @@ target_link_libraries(EQlibrium
         juce::juce_gui_extra
         juce::juce_events
         juce::juce_dsp
+        juce::juce_audio_formats
         PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags

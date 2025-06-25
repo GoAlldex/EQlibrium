@@ -241,7 +241,9 @@ public:
     using BlockType = juce::AudioBuffer<float>;
     SingleChannelSampleFifo<BlockType> leftChannelFifo { Left };
     SingleChannelSampleFifo<BlockType> rightChannelFifo { Right };
-
+    juce::AudioFormatManager formatManager;
+    std::unique_ptr<juce::AudioFormatReaderSource> playSource;
+    void getFile();
 private:
     MonoChain leftChain, rightChain;
     void updatePeakFilter(const ChainSettings& chainSettings);

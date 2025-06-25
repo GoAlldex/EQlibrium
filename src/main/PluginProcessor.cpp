@@ -13,7 +13,9 @@ EQlibriumAudioProcessor::EQlibriumAudioProcessor()
                      #endif
                        )
 #endif
-{}
+{
+    getFile();
+}
 
 EQlibriumAudioProcessor::~EQlibriumAudioProcessor() {}
 
@@ -53,6 +55,20 @@ int EQlibriumAudioProcessor::getCurrentProgram() { return 0; }
 void EQlibriumAudioProcessor::setCurrentProgram (int index) {}
 const juce::String EQlibriumAudioProcessor::getProgramName (int index) { return {}; }
 void EQlibriumAudioProcessor::changeProgramName (int index, const juce::String& newName) {}
+
+//==============================================================================
+
+void EQlibriumAudioProcessor::getFile()
+{
+    formatManager.registerBasicFormats();
+    auto file = juce::File {"E:/Studium/Semester 10/Audiovisual Computing/MS3/Test_Music/Repiet - All I Need.mp3"};
+    auto* reader = formatManager.createReaderFor(file);
+    if(reader != nullptr) {
+        playSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
+    } else {
+        juce::JUCEApplicationBase::quit();
+    }
+}
 
 //==============================================================================
 void EQlibriumAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock) {
@@ -98,9 +114,11 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         buffer.clear (i, 0, buffer.getNumSamples());
     updateFilters();
     juce::dsp::AudioBlock<float> block(buffer);
-    /*buffer.clear();
-    juce::dsp::ProcessContextReplacing<float> stereoContext(block);
-    osc.process(stereoContext);*/
+    if(playSource)
+    {
+        juce::AudioSourceChannelInfo info(buffer);
+        playSource->getNextAudioBlock(info);
+    }
     auto leftBlock = block.getSingleChannelBlock(0);
     auto rightBlock = block.getSingleChannelBlock(1);
     juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
@@ -267,7 +285,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::cre
         "Right Peak Quality",
         juce::NormalisableRange<float>(0.1f,10.f,0.05f,1.f),
         1.f));
-
     layout.add(std::make_unique<juce::AudioParameterChoice>("Right LowCut Slope", "Right LowCut Slope", stringArray, 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("Right HighCut Slope", "Right HighCut Slope", stringArray, 0));
     return layout;

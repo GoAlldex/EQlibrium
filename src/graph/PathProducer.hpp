@@ -93,7 +93,7 @@ private:
 struct PathProducer {
     PathProducer(SingleChannelSampleFifo<EQlibriumAudioProcessor::BlockType>& scsf) :
     ChannelFifo(&scsf) {
-        ChannelFFTDataGenerator.changeOrder(order4096);
+        ChannelFFTDataGenerator.changeOrder(order2048);
         monoBuffer.setSize(1, ChannelFFTDataGenerator.getFFTSize());
     }
     void process(juce::Rectangle<float> fftBounds, double sampleRate);
