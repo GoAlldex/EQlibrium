@@ -66,10 +66,6 @@ void EQlibriumAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
     updateFilters();
     leftChannelFifo.prepare(samplesPerBlock);
     rightChannelFifo.prepare(samplesPerBlock);
-    osc.initialise([](float x) { return std::sin(x); });
-    spec.numChannels = getTotalNumOutputChannels();
-    osc.prepare(spec);
-    osc.setFrequency(1000);
 }
 
 void EQlibriumAudioProcessor::releaseResources() {}

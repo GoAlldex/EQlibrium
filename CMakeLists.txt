@@ -38,8 +38,11 @@ juce_generate_juce_header(EQlibrium)
 
 target_sources(EQlibrium
         PRIVATE
-        src/PluginEditor.cpp
-        src/PluginProcessor.cpp)
+        src/main/PluginEditor.cpp
+        src/main/PluginProcessor.cpp
+        src/graph/ResponseCurveComponent.cpp
+        src/graph/PathProducer.cpp
+        src/inputs/RotarySlider.cpp)
 
 target_compile_definitions(EQlibrium
         PUBLIC
