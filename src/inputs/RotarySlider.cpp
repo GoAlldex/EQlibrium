@@ -1,6 +1,6 @@
 #include "RotarySlider.hpp"
 
-void LookAndFeel::drawRotarySlider(
+void LookAndFeelRotarySlider::drawRotarySlider(
     juce::Graphics & g,
     int x,
     int y,
@@ -51,16 +51,12 @@ void LookAndFeel::drawRotarySlider(
     }
 }
 
-
-//==============================================================================
-void RotarySliderWithLabels::paint(juce::Graphics &g){
+void RotarySliderWithLabels::paint(juce::Graphics &g) {
     using namespace juce;
     auto startAng = degreesToRadians(180.f+45.f);
     auto endAng = degreesToRadians(180.f-45.f)+MathConstants<float>::twoPi;
     auto range = getRange();
     auto sliderBounds = getSliderBounds();
-    /*g.setColour(Colours::black);
-    g.drawRect(getLocalBounds().toFloat(), 0.3f);*/
     getLookAndFeel().drawRotarySlider(
         g,
         sliderBounds.getX(),

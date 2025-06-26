@@ -73,6 +73,7 @@ void EQlibriumAudioProcessor::getFile()
 
 //==============================================================================
 void EQlibriumAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock) {
+    previousChainSettings = getChainSettings(apvts);
     juce::dsp::ProcessSpec spec {
         spec.sampleRate = sampleRate,
         spec.maximumBlockSize = samplesPerBlock,
@@ -111,6 +112,20 @@ bool EQlibriumAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 }
 #endif
 
+void EQlibriumAudioProcessor::smoothLoudness(juce::AudioBuffer<float>& buffer) {
+    if (juce::approximatelyEqual(getChainSettings(apvts).gainLeft, previousChainSettings.gainLeft)) {
+        buffer.applyGain(0, 0, buffer.getNumSamples(), previousChainSettings.gainLeft);
+    } else {
+        buffer.applyGainRamp(0, 0, buffer.getNumSamples(), previousChainSettings.gainLeft, getChainSettings(apvts).gainLeft);
+    }
+    if (juce::approximatelyEqual(getChainSettings(apvts).gainRight, previousChainSettings.gainRight)) {
+        buffer.applyGain(1, 0, buffer.getNumSamples(), previousChainSettings.gainRight);
+    } else {
+        buffer.applyGainRamp(1, 0, buffer.getNumSamples(), previousChainSettings.gainRight, getChainSettings(apvts).gainRight);
+    }
+    previousChainSettings = getChainSettings(apvts);
+}
+
 void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -131,6 +146,7 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     rightChain.process(rightContext);
     leftChannelFifo.update(buffer);
     rightChannelFifo.update(buffer);
+    smoothLoudness(buffer);
     rmsLevelLeft.skip(buffer.getNumSamples());
     rmsLevelRight.skip(buffer.getNumSamples());
     {
@@ -185,6 +201,8 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts) {
     settings.rightPeakQuality = apvts.getRawParameterValue("Right Peak Quality")->load();
     settings.rightLowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("Right LowCut Slope")->load());
     settings.rightHighCutSlope = static_cast<Slope>(apvts.getRawParameterValue("Right HighCut Slope")->load());
+    settings.gainLeft = apvts.getRawParameterValue("Left Gain Slider")->load();
+    settings.gainRight = apvts.getRawParameterValue("Right Gain Slider")->load();
     return settings;
 }
 
@@ -319,6 +337,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::cre
         1.f));
     layout.add(std::make_unique<juce::AudioParameterChoice>("Right LowCut Slope", "Right LowCut Slope", stringArray, 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("Right HighCut Slope", "Right HighCut Slope", stringArray, 0));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        "Left Gain Slider",
+        "Left Gain Slider",
+        juce::NormalisableRange<float>(0.f,1.f,0.05f,1.f),
+        1.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        "Right Gain Slider",
+        "Right Gain Slider",
+        juce::NormalisableRange<float>(0.f,1.f,0.05f,1.f),
+        1.f));
     return layout;
 }
 

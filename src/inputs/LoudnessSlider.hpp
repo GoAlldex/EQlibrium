@@ -3,21 +3,22 @@
 #include <JuceHeader.h>
 #include "../main/PluginProcessor.hpp"
 
-struct LookAndFeelRotarySlider : juce::LookAndFeel_V4 {
-    void drawRotarySlider(
+struct LookAndFeelLinearSlider : juce::LookAndFeel_V4 {
+    void drawLinearSlider(
         juce::Graphics&,
         int x,
         int y,
         int width,
         int height,
-        float sliderPosProportional,
-        float rotaryStartAngle,
-        float rotaryEndAngle,
+        float sliderPos,
+        float minSliderPos,
+        float maxSliderPos,
+        juce::Slider::SliderStyle,
         juce::Slider&) override;
 };
 
-struct RotarySliderWithLabels : juce::Slider {
-    RotarySliderWithLabels(
+struct LinearSliderWithLabels : juce::Slider {
+    LinearSliderWithLabels(
         juce::RangedAudioParameter& rap,
         const juce::String& unitSuffix
     ) :
@@ -29,7 +30,7 @@ struct RotarySliderWithLabels : juce::Slider {
     suffix(unitSuffix) {
         setLookAndFeel(&lnf);
     }
-    ~RotarySliderWithLabels() {
+    ~LinearSliderWithLabels() {
         setLookAndFeel(nullptr);
     }
     struct LabelPos {
@@ -39,10 +40,9 @@ struct RotarySliderWithLabels : juce::Slider {
     juce::Array<LabelPos> labels;
     void paint(juce::Graphics& g) override;
     juce::Rectangle<int> getSliderBounds() const;
-    int getTextHeight() const { return 14; }
     juce::String getDisplayString() const;
 private:
-    LookAndFeelRotarySlider lnf;
+    LookAndFeelLinearSlider lnf;
     juce::RangedAudioParameter* param;
     juce::String suffix;
 };

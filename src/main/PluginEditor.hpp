@@ -6,6 +6,7 @@
 #include "../graph/PathProducer.hpp"
 #include "../inputs/RotarySlider.hpp"
 #include "../level_meter/LevelMeter.hpp"
+#include "../inputs/LoudnessSlider.hpp"
 
 //==============================================================================
 class EQlibriumAudioProcessorEditor  : public juce::AudioProcessorEditor
@@ -55,6 +56,7 @@ private:
         highCutFreqSliderRight,
         lowCutSlopeSliderRight,
         highCutSlopeSliderRight;
+    LinearSliderWithLabels gainSliderLeft, gainSliderRight;
     LeftResponseCurveComponent filterLeft;
     RightResponseCurveComponent filterRight;
     LeftPathProducerComponent freqLeft;
@@ -74,7 +76,9 @@ private:
         rightLowCutFreqSliderAttachment,
         rightHighCutFreqSliderAttachment,
         rightLowCutSlopeSliderAttachment,
-        rightHighCutSlopeSliderAttachment;
+        rightHighCutSlopeSliderAttachment,
+        leftGainAttachment,
+        rightGainAttachment;
     LeftLevelMeterComponent levelMeterLeft;
     RightLevelMeterComponent levelMeterRight;
     std::vector<Component*> getComps();

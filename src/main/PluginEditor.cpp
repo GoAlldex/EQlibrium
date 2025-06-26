@@ -21,6 +21,8 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     highCutSlopeSliderRight(*audioProcessor.apvts.getParameter("Right HighCut Slope"), "dB/Okt"),
     filterLeft(audioProcessor),
     freqLeft(audioProcessor),
+    gainSliderLeft(*audioProcessor.apvts.getParameter("Left Gain Slider"), "%"),
+    gainSliderRight(*audioProcessor.apvts.getParameter("Right Gain Slider"), "%"),
     leftPeakFreqSliderAttachment(audioProcessor.apvts, "Left Peak Freq", peakFreqSliderLeft),
     leftPeakGainSliderAttachment(audioProcessor.apvts, "Left Peak Gain", peakGainSliderLeft),
     leftPeakQualitySliderAttachment(audioProcessor.apvts, "Left Peak Quality", peakQualitySliderLeft),
@@ -38,7 +40,9 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     filterRight(audioProcessor),
     freqRight(audioProcessor),
     levelMeterLeft(audioProcessor),
-    levelMeterRight(audioProcessor) {
+    levelMeterRight(audioProcessor),
+    leftGainAttachment(audioProcessor.apvts, "Left Gain Slider", gainSliderLeft),
+    rightGainAttachment(audioProcessor.apvts, "Right Gain Slider", gainSliderRight) {
     peakFreqSliderLeft.labels.add({0.f, "20Hz"});
     peakFreqSliderLeft.labels.add({1.f, "20kHz"});
     peakGainSliderLeft.labels.add({0.f, "-24dB"});
@@ -67,6 +71,8 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     lowCutSlopeSliderRight.labels.add({1.f, "48"});
     highCutSlopeSliderRight.labels.add({0.f, "12"});
     highCutSlopeSliderRight.labels.add({1.f, "48"});
+    gainSliderLeft.labels.add({0.f, "L"});
+    gainSliderRight.labels.add({0.f, "R"});
     for(auto* comp : getComps()) {
         addAndMakeVisible(comp);
     }
@@ -77,35 +83,6 @@ EQlibriumAudioProcessorEditor::~EQlibriumAudioProcessorEditor() { }
 //==============================================================================
 void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
     using namespace juce;
-    /*
-    // DEBUG LAYOUT
-    // Show layout
-    g.setColour(Colours::red);
-    g.drawRect(window_micro_rect.toFloat(), 0.1f);
-    g.setColour(Colours::red);
-    g.drawRect(window_settings_rect.toFloat(), 0.1f);
-    g.setColour(Colours::red);
-    g.drawRect(window_filter_rect.toFloat(), 0.1f);
-    g.setColour(Colours::red);
-    g.drawRect(window_analyser_rect.toFloat(), 0.1f);
-    g.setColour(Colours::red);
-    g.drawRect(window_vumeter_rect.toFloat(), 0.1f);
-    // Show channel split
-    g.setColour(Colours::green);
-    g.drawRect(window_filter_left_rect.toFloat(), 0.1f);
-    g.drawRect(window_analyser_left_rect.toFloat(), 0.1f);
-    g.drawRect(window_vumeter_left_rect.toFloat(), 0.1f);
-    g.setColour(Colours::blue);
-    g.drawRect(window_filter_right_rect.toFloat(), 0.1f);
-    g.drawRect(window_analyser_right_rect.toFloat(), 0.1f);
-    g.drawRect(window_vumeter_right_rect.toFloat(), 0.1f);
-    // Show graph split
-    g.setColour(Colours::white);
-    g.drawRect(window_analyser_left_filter_rect.toFloat(), 0.1f);
-    g.drawRect(window_analyser_right_filter_rect.toFloat(), 0.1f);
-    g.setColour(Colours::white);
-    g.drawRect(window_analyser_left_freq_rect.toFloat(), 0.1f);
-    g.drawRect(window_analyser_right_freq_rect.toFloat(), 0.1f);*/
     Colour bgColour = Colour(50,50,50);
     Colour lineColour = Colour(25,25,25);
     g.setColour(bgColour);
@@ -238,6 +215,14 @@ void EQlibriumAudioProcessorEditor::resized() {
     // Set Level-Meter
     levelMeterLeft.setBounds(window_vumeter_left_rect);
     levelMeterRight.setBounds(window_vumeter_right_rect);
+    // Channel Volume
+    auto gainBox = juce::Rectangle(12,195, 150 , 50);
+    auto gainL = gainBox.removeFromTop(gainBox.getHeight()/2);
+    gainL.removeFromBottom(3);
+    gainSliderLeft.setBounds(gainL);
+    auto gainR = gainBox.removeFromTop(gainBox.getHeight());
+    gainR.removeFromTop(3);
+    gainSliderRight.setBounds(gainR);
 }
 
 std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
@@ -262,6 +247,8 @@ std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
         &filterRight,
         &freqRight,
         &levelMeterLeft,
-        &levelMeterRight
+        &levelMeterRight,
+        &gainSliderLeft,
+        &gainSliderRight
     };
 }

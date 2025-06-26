@@ -43,7 +43,8 @@ target_sources(EQlibrium
         src/graph/ResponseCurveComponent.cpp
         src/graph/PathProducer.cpp
         src/inputs/RotarySlider.cpp
-        src/level_meter/LevelMeter.cpp)
+        src/level_meter/LevelMeter.cpp
+        src/inputs/LoudnessSlider.cpp)
 
 target_compile_definitions(EQlibrium
         PUBLIC
@@ -59,6 +60,7 @@ target_link_libraries(EQlibrium
         juce::juce_audio_processors
         juce::juce_core
         juce::juce_audio_basics
+        juce::juce_gui_basics
         juce::juce_gui_extra
         juce::juce_events
         juce::juce_dsp

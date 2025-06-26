@@ -120,6 +120,8 @@ enum Slope {
 };
 
 struct ChainSettings {
+    float gainLeft = 1.f;
+    float gainRight = 1.f;
     float leftPeakFreq {0}, leftPeakGainInDecibels{0}, leftPeakQuality{1.f}, rightPeakFreq {0}, rightPeakGainInDecibels{0}, rightPeakQuality{1.f};
     float leftLowCutFreq {0}, leftHighCutFreq {0}, rightLowCutFreq {0}, rightHighCutFreq {0};
     Slope leftLowCutSlope {Slope_12}, leftHighCutSlope {Slope_12}, rightLowCutSlope {Slope_12}, rightHighCutSlope {Slope_12};
@@ -245,6 +247,7 @@ public:
     std::unique_ptr<juce::AudioFormatReaderSource> playSource;
     void getFile();
     float getRmsValue(const int channel) const;
+    void smoothLoudness(juce::AudioBuffer<float>& buffer);
 private:
     MonoChain leftChain, rightChain;
     void updatePeakFilter(const ChainSettings& chainSettings);
@@ -252,6 +255,7 @@ private:
     void updateHighCutFilters(const ChainSettings& chainSettings);
     void updateFilters();
     juce::LinearSmoothedValue<float> rmsLevelLeft, rmsLevelRight;
+    ChainSettings previousChainSettings;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQlibriumAudioProcessor)
 };
