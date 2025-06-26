@@ -42,7 +42,8 @@ target_sources(EQlibrium
         src/main/PluginProcessor.cpp
         src/graph/ResponseCurveComponent.cpp
         src/graph/PathProducer.cpp
-        src/inputs/RotarySlider.cpp)
+        src/inputs/RotarySlider.cpp
+        src/level_meter/LevelMeter.cpp)
 
 target_compile_definitions(EQlibrium
         PUBLIC

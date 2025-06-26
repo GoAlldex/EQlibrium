@@ -7,7 +7,7 @@ audioProcessor(p) {
         param->addListener(this);
     }
     updateChain();
-    startTimerHz(60);
+    startTimerHz(30);
 }
 
 LeftResponseCurveComponent::~LeftResponseCurveComponent() {
@@ -199,7 +199,7 @@ audioProcessor(p) {
         param->addListener(this);
     }
     updateChain();
-    startTimerHz(60);
+    startTimerHz(30);
 }
 
 RightResponseCurveComponent::~RightResponseCurveComponent() {

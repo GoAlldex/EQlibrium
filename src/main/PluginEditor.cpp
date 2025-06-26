@@ -36,7 +36,9 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     rightHighCutFreqSliderAttachment(audioProcessor.apvts, "Right HighCut Freq", highCutFreqSliderRight),
     rightHighCutSlopeSliderAttachment(audioProcessor.apvts, "Right HighCut Slope", highCutSlopeSliderRight),
     filterRight(audioProcessor),
-    freqRight(audioProcessor) {
+    freqRight(audioProcessor),
+    levelMeterLeft(audioProcessor),
+    levelMeterRight(audioProcessor) {
     peakFreqSliderLeft.labels.add({0.f, "20Hz"});
     peakFreqSliderLeft.labels.add({1.f, "20kHz"});
     peakGainSliderLeft.labels.add({0.f, "-24dB"});
@@ -187,7 +189,7 @@ void EQlibriumAudioProcessorEditor::resized() {
     window_vumeter_right_rect.removeFromBottom(6);
     window_vumeter_right_rect.removeFromLeft(3);
     window_vumeter_right_rect.removeFromRight(6);
-    // Set left
+    // Set graph left
     auto filterLeftH = window_filter_left_rect.getHeight();
     peakL = window_filter_left_rect.removeFromTop(filterLeftH/3);
     peakL.removeFromBottom(3);
@@ -210,7 +212,7 @@ void EQlibriumAudioProcessorEditor::resized() {
     lowCutSlopeSliderLeft.setBounds(lowCutLD.removeFromLeft(lowCutWL/2));
     filterLeft.setBounds(window_analyser_left_filter_rect);
     freqLeft.setBounds(window_analyser_left_freq_rect);
-    //Set right
+    //Set graph right
     auto filterRightH = window_filter_right_rect.getHeight();
     peakR = window_filter_right_rect.removeFromTop(filterRightH/3);
     peakR.removeFromBottom(3);
@@ -233,6 +235,9 @@ void EQlibriumAudioProcessorEditor::resized() {
     lowCutSlopeSliderRight.setBounds(lowCutRD.removeFromLeft(lowCutWR/2));
     filterRight.setBounds(window_analyser_right_filter_rect);
     freqRight.setBounds(window_analyser_right_freq_rect);
+    // Set Level-Meter
+    levelMeterLeft.setBounds(window_vumeter_left_rect);
+    levelMeterRight.setBounds(window_vumeter_right_rect);
 }
 
 std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
@@ -255,6 +260,8 @@ std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
         &lowCutSlopeSliderRight,
         &highCutSlopeSliderRight,
         &filterRight,
-        &freqRight
+        &freqRight,
+        &levelMeterLeft,
+        &levelMeterRight
     };
 }

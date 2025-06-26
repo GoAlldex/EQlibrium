@@ -244,13 +244,14 @@ public:
     juce::AudioFormatManager formatManager;
     std::unique_ptr<juce::AudioFormatReaderSource> playSource;
     void getFile();
+    float getRmsValue(const int channel) const;
 private:
     MonoChain leftChain, rightChain;
     void updatePeakFilter(const ChainSettings& chainSettings);
     void updateLowCutFilters(const ChainSettings& chainSettings);
     void updateHighCutFilters(const ChainSettings& chainSettings);
     void updateFilters();
-
+    float rmsLevelLeft, rmsLevelRight;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQlibriumAudioProcessor)
 };

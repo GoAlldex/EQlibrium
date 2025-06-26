@@ -65,6 +65,7 @@ void EQlibriumAudioProcessor::getFile()
     auto* reader = formatManager.createReaderFor(file);
     if(reader != nullptr) {
         playSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
+        playSource->setLooping(true);
     } else {
         juce::JUCEApplicationBase::quit();
     }
@@ -114,11 +115,12 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         buffer.clear (i, 0, buffer.getNumSamples());
     updateFilters();
     juce::dsp::AudioBlock<float> block(buffer);
-    if(playSource)
-    {
+    if(playSource) {
         juce::AudioSourceChannelInfo info(buffer);
         playSource->getNextAudioBlock(info);
     }
+    rmsLevelLeft = juce::Decibels::gainToDecibels(buffer.getRMSLevel(0, 0, buffer.getNumSamples()));
+    rmsLevelRight = juce::Decibels::gainToDecibels(buffer.getRMSLevel(1, 0, buffer.getNumSamples()));
     auto leftBlock = block.getSingleChannelBlock(0);
     auto rightBlock = block.getSingleChannelBlock(1);
     juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
@@ -222,6 +224,16 @@ void EQlibriumAudioProcessor::updateFilters() {
     updatePeakFilter(chainSettings);
     updateLowCutFilters(chainSettings);
     updateHighCutFilters(chainSettings);
+}
+
+float EQlibriumAudioProcessor::getRmsValue(const int channel) const {
+    jassert(channel == 0 || channel == 1);
+    if(channel == 0) {
+        return rmsLevelLeft;
+    } else if(channel == 1) {
+        return rmsLevelRight;
+    }
+    return 0.f;
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::createParameterLayout() {

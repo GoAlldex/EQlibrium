@@ -5,6 +5,7 @@
 #include "../graph/ResponseCurveComponent.hpp"
 #include "../graph/PathProducer.hpp"
 #include "../inputs/RotarySlider.hpp"
+#include "../level_meter/LevelMeter.hpp"
 
 //==============================================================================
 class EQlibriumAudioProcessorEditor  : public juce::AudioProcessorEditor
@@ -74,6 +75,8 @@ private:
         rightHighCutFreqSliderAttachment,
         rightLowCutSlopeSliderAttachment,
         rightHighCutSlopeSliderAttachment;
+    LeftLevelMeterComponent levelMeterLeft;
+    RightLevelMeterComponent levelMeterRight;
     std::vector<Component*> getComps();
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQlibriumAudioProcessorEditor)
 };
