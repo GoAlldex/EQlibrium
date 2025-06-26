@@ -73,6 +73,10 @@ void EQlibriumAudioProcessor::getFile()
 
 //==============================================================================
 void EQlibriumAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock) {
+    rmsLevelLeft.reset(sampleRate, 0.2);
+    rmsLevelLeft.setCurrentAndTargetValue(-100.f);
+    rmsLevelRight.reset(sampleRate, 0.2);
+    rmsLevelRight.setCurrentAndTargetValue(-100.f);
     juce::dsp::ProcessSpec spec {
         spec.sampleRate = sampleRate,
         spec.maximumBlockSize = samplesPerBlock,
@@ -119,8 +123,24 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         juce::AudioSourceChannelInfo info(buffer);
         playSource->getNextAudioBlock(info);
     }
-    rmsLevelLeft = juce::Decibels::gainToDecibels(buffer.getRMSLevel(0, 0, buffer.getNumSamples()));
-    rmsLevelRight = juce::Decibels::gainToDecibels(buffer.getRMSLevel(1, 0, buffer.getNumSamples()));
+    rmsLevelLeft.skip(buffer.getNumSamples());
+    rmsLevelRight.skip(buffer.getNumSamples());
+    {
+        const auto value = juce::Decibels::gainToDecibels(buffer.getRMSLevel(0, 0, buffer.getNumSamples()));
+        if(value < rmsLevelLeft.getCurrentValue()) {
+            rmsLevelLeft.setTargetValue(value);
+        } else {
+            rmsLevelLeft.setCurrentAndTargetValue(value);
+        }
+    }
+    {
+        const auto value = juce::Decibels::gainToDecibels(buffer.getRMSLevel(1, 0, buffer.getNumSamples()));
+        if(value < rmsLevelRight.getCurrentValue()) {
+            rmsLevelRight.setTargetValue(value);
+        } else {
+            rmsLevelRight.setCurrentAndTargetValue(value);
+        }
+    }
     auto leftBlock = block.getSingleChannelBlock(0);
     auto rightBlock = block.getSingleChannelBlock(1);
     juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
@@ -229,9 +249,9 @@ void EQlibriumAudioProcessor::updateFilters() {
 float EQlibriumAudioProcessor::getRmsValue(const int channel) const {
     jassert(channel == 0 || channel == 1);
     if(channel == 0) {
-        return rmsLevelLeft;
+        return rmsLevelLeft.getCurrentValue();
     } else if(channel == 1) {
-        return rmsLevelRight;
+        return rmsLevelRight.getCurrentValue();
     }
     return 0.f;
 }
