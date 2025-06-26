@@ -73,10 +73,6 @@ void EQlibriumAudioProcessor::getFile()
 
 //==============================================================================
 void EQlibriumAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock) {
-    rmsLevelLeft.reset(sampleRate, 0.2);
-    rmsLevelLeft.setCurrentAndTargetValue(-100.f);
-    rmsLevelRight.reset(sampleRate, 0.2);
-    rmsLevelRight.setCurrentAndTargetValue(-100.f);
     juce::dsp::ProcessSpec spec {
         spec.sampleRate = sampleRate,
         spec.maximumBlockSize = samplesPerBlock,
@@ -87,6 +83,10 @@ void EQlibriumAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
     updateFilters();
     leftChannelFifo.prepare(samplesPerBlock);
     rightChannelFifo.prepare(samplesPerBlock);
+    rmsLevelLeft.reset(sampleRate, 0.2);
+    rmsLevelLeft.setCurrentAndTargetValue(-100.f);
+    rmsLevelRight.reset(sampleRate, 0.2);
+    rmsLevelRight.setCurrentAndTargetValue(-100.f);
 }
 
 void EQlibriumAudioProcessor::releaseResources() {}
@@ -123,6 +123,14 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         juce::AudioSourceChannelInfo info(buffer);
         playSource->getNextAudioBlock(info);
     }
+    auto leftBlock = block.getSingleChannelBlock(0);
+    auto rightBlock = block.getSingleChannelBlock(1);
+    juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
+    juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
+    leftChain.process(leftContext);
+    rightChain.process(rightContext);
+    leftChannelFifo.update(buffer);
+    rightChannelFifo.update(buffer);
     rmsLevelLeft.skip(buffer.getNumSamples());
     rmsLevelRight.skip(buffer.getNumSamples());
     {
@@ -141,14 +149,6 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
             rmsLevelRight.setCurrentAndTargetValue(value);
         }
     }
-    auto leftBlock = block.getSingleChannelBlock(0);
-    auto rightBlock = block.getSingleChannelBlock(1);
-    juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
-    juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
-    leftChain.process(leftContext);
-    rightChain.process(rightContext);
-    leftChannelFifo.update(buffer);
-    rightChannelFifo.update(buffer);
 }
 
 //==============================================================================

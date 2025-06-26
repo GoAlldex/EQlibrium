@@ -18,6 +18,7 @@ private:
     EQlibriumAudioProcessor& audioProcessor;
     MonoChain monoChain;
     float level = -60.f;
+    juce::Rectangle<float> levelRect;
 };
 
 struct RightLevelMeterComponent: juce::Component,
@@ -35,4 +36,5 @@ private:
     EQlibriumAudioProcessor& audioProcessor;
     MonoChain monoChain;
     float level = -60.f;
+    juce::Rectangle<float> levelRect;
 };
