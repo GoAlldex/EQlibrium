@@ -50,11 +50,11 @@ void LinearSliderWithLabels::paint(juce::Graphics &g) {
         ),
         0.0,
         1.0,
-        juce::Slider::SliderStyle::LinearVertical,
+        LinearVertical,
         *this
     );
-    Image speaker = ImageFileFormat::loadFrom(File("E:/Studium/Semester 10/Audiovisual Computing/MS3/EQlibrium/images/speaker.png"));
-    g.drawImage(speaker, 15, 0, 20, 20, 0, 0, 1000,1000, false);
+    Image speaker = ImageFileFormat::loadFrom(File(ProjectInfo::imgPath+"speaker.png"));
+    g.drawImage(speaker, 15, 0, 20, 20, 0, 0, 75,75, false);
     Rectangle<float> r;
     auto str = labels[0].label;
     g.setFont(14);

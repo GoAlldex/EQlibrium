@@ -71,3 +71,16 @@ target_link_libraries(EQlibrium
         juce::juce_recommended_warning_flags
         magic_enum::magic_enum
 )
+
+set(DEBUG_PATH_STANDALONE "${CMAKE_CURRENT_BINARY_DIR}/EQlibrium_artefacts/Debug/Standalone")
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/images
+        DESTINATION ${DEBUG_PATH_STANDALONE}/)
+set(DEBUG_PATH_VST3 "${CMAKE_CURRENT_BINARY_DIR}/EQlibrium_artefacts/Debug/VST3")
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/images
+        DESTINATION ${DEBUG_PATH_VST3}/)
+set(RELEASE_PATH_STANDALONE "${CMAKE_CURRENT_BINARY_DIR}/EQlibrium_artefacts/Release/Standalone")
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/images
+        DESTINATION ${RELEASE_PATH_STANDALONE}/)
+set(RELEASE_PATH_VST3 "${CMAKE_CURRENT_BINARY_DIR}/EQlibrium_artefacts/Release/VST3")
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/images
+        DESTINATION ${RELEASE_PATH_VST3}/)

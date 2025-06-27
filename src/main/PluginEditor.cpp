@@ -216,7 +216,7 @@ void EQlibriumAudioProcessorEditor::resized() {
     levelMeterLeft.setBounds(window_vumeter_left_rect);
     levelMeterRight.setBounds(window_vumeter_right_rect);
     // Channel Volume
-    auto gainBox = juce::Rectangle(12,195, 150 , 50);
+    auto gainBox = juce::Rectangle(12,195, 150, 50);
     auto gainL = gainBox.removeFromTop(gainBox.getHeight()/2);
     gainL.removeFromBottom(3);
     gainSliderLeft.setBounds(gainL);
