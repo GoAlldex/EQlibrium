@@ -27,7 +27,6 @@ void LookAndFeelRotarySlider::drawRotarySlider(
         r.setRight(center.getX()+2);
         r.setTop(bounds.getY());
         r.setBottom(center.getY()-rswl->getTextHeight()*1.5);
-        p.addRoundedRectangle(r, 2.f);
         p.addRectangle(r);
         jassert(rotaryStartAngle < rotaryEndAngle);
         auto sliderAngRad = jmap(
@@ -47,7 +46,7 @@ void LookAndFeelRotarySlider::drawRotarySlider(
         g.setColour(rotaryBGColour);
         g.fillRect(r);
         g.setColour(Colours::white);
-        g.drawFittedText(text, r.toNearestInt(), juce::Justification::centred, 1);
+        g.drawFittedText(text, r.toNearestInt(), Justification::centred, 1);
     }
 }
 

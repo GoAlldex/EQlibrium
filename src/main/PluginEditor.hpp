@@ -39,11 +39,17 @@ public:
     juce::Rectangle<int> window_vumeter_rect;
     juce::Rectangle<int> window_vumeter_left_rect;
     juce::Rectangle<int> window_vumeter_right_rect;
+    juce::Rectangle<int> peakLeftLabel;
     juce::Rectangle<int> peakL;
+    juce::Rectangle<int> peakRightLabel;
     juce::Rectangle<int> peakR;
+    juce::Rectangle<int> highCutLeftLabel;
     juce::Rectangle<int> highCutL;
+    juce::Rectangle<int> highCutRightLabel;
     juce::Rectangle<int> highCutR;
+    juce::Rectangle<int> lowCutLeftLabel;
     juce::Rectangle<int> lowCutL;
+    juce::Rectangle<int> lowCutRightLabel;
     juce::Rectangle<int> lowCutR;
 private:
     EQlibriumAudioProcessor& audioProcessor;
