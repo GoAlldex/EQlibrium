@@ -42,7 +42,9 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     levelMeterLeft(audioProcessor),
     levelMeterRight(audioProcessor),
     leftGainAttachment(audioProcessor.apvts, "Left Gain Slider", gainSliderLeft),
-    rightGainAttachment(audioProcessor.apvts, "Right Gain Slider", gainSliderRight) {
+    rightGainAttachment(audioProcessor.apvts, "Right Gain Slider", gainSliderRight),
+    leftChannelButtonAttachment(audioProcessor.apvts, "Left Channel Button", channelButtonLeft),
+    rightChannelButtonAttachment(audioProcessor.apvts, "Right Channel Button", channelButtonRight) {
     peakFreqSliderLeft.labels.add({0.f, "20Hz"});
     peakFreqSliderLeft.labels.add({1.f, "20kHz"});
     peakGainSliderLeft.labels.add({0.f, "-24dB"});
@@ -73,12 +75,31 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     highCutSlopeSliderRight.labels.add({1.f, "48"});
     gainSliderLeft.labels.add({0.f, "L"});
     gainSliderRight.labels.add({0.f, "R"});
+    channelButtonLeft.label = "L";
+    channelButtonRight.label = "R";
     for(auto* comp : getComps()) {
         addAndMakeVisible(comp);
     }
+    auto safePtr = SafePointer(this);
+    channelButtonLeft.setLookAndFeel(&lnf);
+    channelButtonLeft.onClick = [safePtr]() {
+        if(auto* comp = safePtr.getComponent() ) {
+            auto bypassed = comp->channelButtonLeft.getToggleState();
+        }
+    };
+    channelButtonRight.setLookAndFeel(&lnf);
+    channelButtonRight.onClick = [safePtr]() {
+        if(auto* comp = safePtr.getComponent() ) {
+            auto bypassed = comp->channelButtonRight.getToggleState();
+        }
+    };
     setSize (1000, 1000);
 }
-EQlibriumAudioProcessorEditor::~EQlibriumAudioProcessorEditor() { }
+
+EQlibriumAudioProcessorEditor::~EQlibriumAudioProcessorEditor() {
+    channelButtonLeft.setLookAndFeel(nullptr);
+    channelButtonRight.setLookAndFeel(nullptr);
+}
 
 //==============================================================================
 void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
@@ -223,6 +244,14 @@ void EQlibriumAudioProcessorEditor::resized() {
     auto gainR = gainBox.removeFromTop(gainBox.getHeight());
     gainR.removeFromTop(3);
     gainSliderRight.setBounds(gainR);
+    // Channel on/off Buttons
+    auto onoffBox = juce::Rectangle(190,177, 37, 80);
+    auto onoffL = onoffBox.removeFromTop(onoffBox.getHeight()/2);
+    onoffL.removeFromBottom(3);
+    channelButtonLeft.setBounds(onoffL);
+    auto onoffR = onoffBox.removeFromTop(onoffBox.getHeight());
+    onoffR.removeFromTop(3);
+    channelButtonRight.setBounds(onoffR);
 }
 
 std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
@@ -249,6 +278,8 @@ std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
         &levelMeterLeft,
         &levelMeterRight,
         &gainSliderLeft,
-        &gainSliderRight
+        &gainSliderRight,
+        &channelButtonLeft,
+        &channelButtonRight
     };
 }

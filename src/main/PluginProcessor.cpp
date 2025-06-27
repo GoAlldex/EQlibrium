@@ -203,6 +203,8 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts) {
     settings.rightHighCutSlope = static_cast<Slope>(apvts.getRawParameterValue("Right HighCut Slope")->load());
     settings.gainLeft = apvts.getRawParameterValue("Left Gain Slider")->load();
     settings.gainRight = apvts.getRawParameterValue("Right Gain Slider")->load();
+    settings.channelLeftButton = apvts.getRawParameterValue("Left Channel Button")->load();
+    settings.channelRightButton = apvts.getRawParameterValue("Right Channel Button")->load();
     return settings;
 }
 
@@ -274,7 +276,8 @@ float EQlibriumAudioProcessor::getRmsValue(const int channel) const {
     return 0.f;
 }
 
-juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::createParameterLayout() {
+juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::createParameterLayout()
+{
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         "Left LowCut Freq",
@@ -340,13 +343,24 @@ juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::cre
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         "Left Gain Slider",
         "Left Gain Slider",
-        juce::NormalisableRange<float>(0.f,1.f,0.05f,1.f),
+        juce::NormalisableRange<float>(0.f,1.f,0.05f,2.f),
         1.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         "Right Gain Slider",
         "Right Gain Slider",
-        juce::NormalisableRange<float>(0.f,1.f,0.05f,1.f),
+        juce::NormalisableRange<float>(0.f,1.f,0.05f,2.f),
         1.f));
+    auto attributes = juce::AudioParameterBoolAttributes();
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        "Left Channel Button",
+        "Left Channel Button",
+        true,
+        attributes));
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        "Right Channel Button",
+        "Right Channel Button",
+        true,
+        attributes));
     return layout;
 }
 

@@ -7,6 +7,7 @@
 #include "../inputs/RotarySlider.hpp"
 #include "../level_meter/LevelMeter.hpp"
 #include "../inputs/LoudnessSlider.hpp"
+#include "../inputs/ChannelButtons.hpp"
 
 //==============================================================================
 class EQlibriumAudioProcessorEditor  : public juce::AudioProcessorEditor
@@ -61,9 +62,10 @@ private:
     RightResponseCurveComponent filterRight;
     LeftPathProducerComponent freqLeft;
     RightPathProducerComponent freqRight;
+    ChannelButtons channelButtonLeft, channelButtonRight;
     using APVTS = juce::AudioProcessorValueTreeState;
-    using Attachment = APVTS::SliderAttachment;
-    Attachment leftPeakFreqSliderAttachment,
+    using SliderAttachment = APVTS::SliderAttachment;
+    SliderAttachment leftPeakFreqSliderAttachment,
         leftPeakGainSliderAttachment,
         leftPeakQualitySliderAttachment,
         leftLowCutFreqSliderAttachment,
@@ -79,8 +81,11 @@ private:
         rightHighCutSlopeSliderAttachment,
         leftGainAttachment,
         rightGainAttachment;
+    using ButtonAttachment = APVTS::ButtonAttachment;
+    ButtonAttachment leftChannelButtonAttachment, rightChannelButtonAttachment;
     LeftLevelMeterComponent levelMeterLeft;
     RightLevelMeterComponent levelMeterRight;
     std::vector<Component*> getComps();
+    LookAndFeelChannelButtons lnf;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQlibriumAudioProcessorEditor)
 };

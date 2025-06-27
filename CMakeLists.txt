@@ -44,7 +44,8 @@ target_sources(EQlibrium
         src/graph/PathProducer.cpp
         src/inputs/RotarySlider.cpp
         src/level_meter/LevelMeter.cpp
-        src/inputs/LoudnessSlider.cpp)
+        src/inputs/LoudnessSlider.cpp
+        src/inputs/ChannelButtons.cpp)
 
 target_compile_definitions(EQlibrium
         PUBLIC
