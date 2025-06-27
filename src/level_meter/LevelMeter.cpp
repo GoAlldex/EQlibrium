@@ -33,7 +33,6 @@ void LeftLevelMeterComponent::paint(juce::Graphics& g) {
 
 void LeftLevelMeterComponent::resized() {
     levelRect = getLocalBounds().toFloat();
-    levelRect.removeFromBottom(60);
 }
 
 void LeftLevelMeterComponent::timerCallback() {
@@ -76,7 +75,6 @@ void RightLevelMeterComponent::paint(juce::Graphics& g) {
 
 void RightLevelMeterComponent::resized() {
     levelRect = getLocalBounds().toFloat();
-    levelRect.removeFromBottom(60);
 }
 
 void RightLevelMeterComponent::timerCallback() {

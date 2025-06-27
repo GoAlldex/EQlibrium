@@ -22,6 +22,10 @@ public:
     juce::Rectangle<int> window_full_rect;
     juce::Rectangle<int> window_micro_rect;
     juce::Rectangle<int> window_settings_rect;
+    juce::Rectangle<int> window_graph_rect;
+    juce::Rectangle<int> window_channel_label_left;
+    juce::Rectangle<int> window_channel_label_right;
+    juce::Rectangle<int> window_inner_grap_rect;
     juce::Rectangle<int> window_filter_rect;
     juce::Rectangle<int> window_filter_left_rect;
     juce::Rectangle<int> window_filter_right_rect;

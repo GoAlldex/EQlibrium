@@ -20,10 +20,10 @@ void LookAndFeelLinearSlider::drawLinearSlider(
         auto text = rswl->getDisplayString();
         auto strWidth = g.getCurrentFont().getStringWidth(text);
         g.setColour(LinearBGColour);
-        g.fillRect(x+height/2+30, y+5, width-height-strWidth-3-30, height-10);
+        g.fillRect(x+height/2+35, y+5, width-height-strWidth-3-35, height-10);
         g.setColour(LinearPosColour);
         if(sliderPos <= maxSliderPos) {
-            auto newSliderPos = x+30+(((width-height-strWidth-3-30)/maxSliderPos)*sliderPos);
+            auto newSliderPos = x+35+(((width-height-strWidth-3-35)/maxSliderPos)*sliderPos);
             g.fillEllipse(static_cast<int>(newSliderPos), y, height, height);
         }
         g.setColour(Colours::white);
@@ -53,7 +53,8 @@ void LinearSliderWithLabels::paint(juce::Graphics &g) {
         LinearVertical,
         *this
     );
-    Image speaker = ImageFileFormat::loadFrom(File(ProjectInfo::imgPath+"speaker.png"));
+    auto path = File::getSpecialLocation (File::SpecialLocationType::currentExecutableFile).getSiblingFile("images").getFullPathName();
+    Image speaker = ImageFileFormat::loadFrom(File(path+"/speaker.png"));
     g.drawImage(speaker, 15, 0, 20, 20, 0, 0, 75,75, false);
     Rectangle<float> r;
     auto str = labels[0].label;

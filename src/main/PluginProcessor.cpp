@@ -72,7 +72,9 @@ void EQlibriumAudioProcessor::getFile()
 }
 
 //==============================================================================
-void EQlibriumAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock) {
+void EQlibriumAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+{
+    //apvts.processor.setBusesLayout(BusesLayout().);
     previousChainSettings = getChainSettings(apvts);
     juce::dsp::ProcessSpec spec {
         spec.sampleRate = sampleRate,
@@ -80,14 +82,14 @@ void EQlibriumAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
         spec.numChannels = 1
     };
     leftChain.prepare(spec);
-    rightChain.prepare(spec);
-    updateFilters();
     leftChannelFifo.prepare(samplesPerBlock);
-    rightChannelFifo.prepare(samplesPerBlock);
     rmsLevelLeft.reset(sampleRate, 0.2);
     rmsLevelLeft.setCurrentAndTargetValue(-100.f);
+    rightChain.prepare(spec);
+    rightChannelFifo.prepare(samplesPerBlock);
     rmsLevelRight.reset(sampleRate, 0.2);
     rmsLevelRight.setCurrentAndTargetValue(-100.f);
+    updateFilters();
 }
 
 void EQlibriumAudioProcessor::releaseResources() {}
@@ -139,16 +141,10 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         playSource->getNextAudioBlock(info);
     }
     auto leftBlock = block.getSingleChannelBlock(0);
-    auto rightBlock = block.getSingleChannelBlock(1);
     juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
-    juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
     leftChain.process(leftContext);
-    rightChain.process(rightContext);
     leftChannelFifo.update(buffer);
-    rightChannelFifo.update(buffer);
-    smoothLoudness(buffer);
     rmsLevelLeft.skip(buffer.getNumSamples());
-    rmsLevelRight.skip(buffer.getNumSamples());
     {
         const auto value = juce::Decibels::gainToDecibels(buffer.getRMSLevel(0, 0, buffer.getNumSamples()));
         if(value < rmsLevelLeft.getCurrentValue()) {
@@ -157,6 +153,12 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
             rmsLevelLeft.setCurrentAndTargetValue(value);
         }
     }
+    auto rightBlock = block.getSingleChannelBlock(1);
+    juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
+    rightChain.process(rightContext);
+    rightChannelFifo.update(buffer);
+    smoothLoudness(buffer);
+    rmsLevelRight.skip(buffer.getNumSamples());
     {
         const auto value = juce::Decibels::gainToDecibels(buffer.getRMSLevel(1, 0, buffer.getNumSamples()));
         if(value < rmsLevelRight.getCurrentValue()) {
@@ -308,7 +310,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::cre
     for(int i = 0; i < 4; i++) {
         juce::String str;
         str << (12+i*12);
-        str << "db/Oct";
+        str << " db/Okt";
         stringArray.add(str);
     }
     layout.add(std::make_unique<juce::AudioParameterChoice>("Left LowCut Slope", "Left LowCut Slope", stringArray, 0));
