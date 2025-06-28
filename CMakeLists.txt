@@ -45,7 +45,8 @@ target_sources(EQlibrium
         src/inputs/RotarySlider.cpp
         src/level_meter/LevelMeter.cpp
         src/inputs/LoudnessSlider.cpp
-        src/inputs/ChannelButtons.cpp)
+        src/inputs/ChannelButtons.cpp
+        src/inputs/NormalImageButtons.cpp)
 
 target_compile_definitions(EQlibrium
         PUBLIC

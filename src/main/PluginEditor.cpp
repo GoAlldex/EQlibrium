@@ -104,12 +104,15 @@ EQlibriumAudioProcessorEditor::~EQlibriumAudioProcessorEditor() {
 //==============================================================================
 void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
     using namespace juce;
+    auto path = File::getSpecialLocation (File::SpecialLocationType::currentExecutableFile).getSiblingFile("images").getFullPathName();
     Colour bgColour = Colour(50,50,50);
     Colour lineColour = Colour(25,25,25);
     g.setColour(bgColour);
     g.fillRect(getLocalBounds());
     g.setColour(lineColour);
     g.drawRect(window_micro_rect.toFloat(), 0.3f);
+    Image logo_img = ImageFileFormat::loadFrom(File(path+"/logo2.png"));
+    g.drawImage(logo_img, 9, 9, 151, 151, 0, 0, 90, 90, false);
     g.drawRect(window_settings_rect.toFloat(), 0.3f);
     g.drawRect(peakL.toFloat(), 0.3f);
     g.drawRect(peakR.toFloat(), 0.3f);
@@ -124,7 +127,6 @@ void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
     g.setColour(Colour(25,25,25));
     g.fillRect(window_channel_label_left.toFloat());
     g.fillRect(window_channel_label_right.toFloat());
-    auto path = File::getSpecialLocation (File::SpecialLocationType::currentExecutableFile).getSiblingFile("images").getFullPathName();
     Image left_channel_img = ImageFileFormat::loadFrom(File(path+"/left_channel.png"));
     g.drawImage(left_channel_img, 0, 400, 30, 400, 0, 0, 30, 400, false);
     Image right_channel_img = ImageFileFormat::loadFrom(File(path+"/right_channel.png"));

@@ -1,6 +1,8 @@
 # JUCE OWN
 extern/JUCE_PLUGIN_HOST
 extern/JUCE_PLUGIN_HOST/**
+build
+build/**
 
 ### C++ template
 # Prerequisites

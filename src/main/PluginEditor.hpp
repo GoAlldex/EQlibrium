@@ -8,6 +8,7 @@
 #include "../level_meter/LevelMeter.hpp"
 #include "../inputs/LoudnessSlider.hpp"
 #include "../inputs/ChannelButtons.hpp"
+#include "../inputs/ChannelButtons.hpp"
 
 //==============================================================================
 class EQlibriumAudioProcessorEditor  : public juce::AudioProcessorEditor
