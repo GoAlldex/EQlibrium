@@ -26,6 +26,7 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     fileChooserButton(imageNames::openFile),
     microphoneButton(imageNames::microphone),
     saveButton(imageNames::save),
+    waveGraph(audioProcessor),
     leftPeakFreqSliderAttachment(audioProcessor.apvts, "Left Peak Freq", peakFreqSliderLeft),
     leftPeakGainSliderAttachment(audioProcessor.apvts, "Left Peak Gain", peakGainSliderLeft),
     leftPeakQualitySliderAttachment(audioProcessor.apvts, "Left Peak Quality", peakQualitySliderLeft),
@@ -166,6 +167,9 @@ void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
     g.drawImage(EQImages(imageNames::lowpass).getImage(), 37, 501, 30, 90, 0, 0, 30, 90, false);
     g.drawRect(lowCutRightLabel.toFloat(), 0.3f);
     g.drawImage(EQImages(imageNames::lowpass).getImage(), lowCutR.getWidth()+43, 501, 30, 90, 0, 0, 30, 90, false);
+    // WaveForm
+    auto waveForm = juce::Rectangle(591, 12, 400, window_micro_rect.getHeight()-12);
+    waveGraph.setBounds(waveForm);
 }
 
 void EQlibriumAudioProcessorEditor::resized() {
@@ -348,6 +352,7 @@ std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
         &channelButtonRight,
         &fileChooserButton,
         &microphoneButton,
-        &saveButton
+        &saveButton,
+        &waveGraph
     };
 }

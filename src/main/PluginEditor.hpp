@@ -10,6 +10,7 @@
 #include "../inputs/ChannelButtons.hpp"
 #include "../inputs/NormalImageButtons.hpp"
 #include "../image/EQImages.hpp"
+#include "../graph/WaveForm.hpp"
 
 //==============================================================================
 class EQlibriumAudioProcessorEditor  : public juce::AudioProcessorEditor
@@ -76,6 +77,7 @@ private:
     RightPathProducerComponent freqRight;
     ChannelButtons channelButtonLeft, channelButtonRight;
     NormalImageButtons fileChooserButton, microphoneButton, saveButton;
+    WaveForm waveGraph;
     using APVTS = juce::AudioProcessorValueTreeState;
     using SliderAttachment = APVTS::SliderAttachment;
     SliderAttachment leftPeakFreqSliderAttachment,

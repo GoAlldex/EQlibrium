@@ -250,6 +250,9 @@ public:
     void getFile();
     float getRmsValue(const int channel) const;
     void smoothLoudness(juce::AudioBuffer<float>& buffer);
+    juce::AudioThumbnailCache thumbnailCache;
+    juce::AudioThumbnail thumbnail;
+    juce::AudioThumbnail* getThumbnail();
 private:
     MonoChain leftChain, rightChain;
     void updatePeakFilter(const ChainSettings& chainSettings);

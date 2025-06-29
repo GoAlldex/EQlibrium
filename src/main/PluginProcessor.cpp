@@ -4,14 +4,14 @@
 //==============================================================================
 EQlibriumAudioProcessor::EQlibriumAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
+    : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
                       #if ! JucePlugin_IsSynth
                        .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), thumbnailCache(5), thumbnail(512, formatManager, thumbnailCache)
 #endif
 { }
 
@@ -62,9 +62,14 @@ void EQlibriumAudioProcessor::getFile() {
         auto file = chooser.getResult();
         juce::AudioFormatReader* reader = formatManager.createReaderFor(file);
         if (reader != nullptr) {
+            thumbnail.setSource(new juce::FileInputSource(file));
             playSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
         }
     }
+}
+
+juce::AudioThumbnail* EQlibriumAudioProcessor::getThumbnail() {
+    return &thumbnail;
 }
 
 //==============================================================================
@@ -341,12 +346,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::cre
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         "Left Gain Slider",
         "Left Gain Slider",
-        juce::NormalisableRange<float>(0.f,1.f,0.05f,2.f),
+        juce::NormalisableRange<float>(0.f, 1.f, 0.01f, 1.f),
         1.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         "Right Gain Slider",
         "Right Gain Slider",
-        juce::NormalisableRange<float>(0.f,1.f,0.05f,2.f),
+        juce::NormalisableRange<float>(0.f, 1.f, 0.01f, 1.f),
         1.f));
     auto attributes = juce::AudioParameterBoolAttributes();
     layout.add(std::make_unique<juce::AudioParameterBool>(

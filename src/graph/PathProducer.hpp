@@ -106,7 +106,7 @@ private:
     juce::Path ChannelFFTPath;
 };
 
-struct LeftPathProducerComponent: juce::Component,
+struct LeftPathProducerComponent : juce::Component,
 juce::AudioProcessorParameter::Listener,
 juce::Timer {
     LeftPathProducerComponent(EQlibriumAudioProcessor&);

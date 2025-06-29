@@ -47,7 +47,8 @@ target_sources(EQlibrium
         src/inputs/LoudnessSlider.cpp
         src/inputs/ChannelButtons.cpp
         src/inputs/NormalImageButtons.cpp
-        src/image/EQImages.cpp)
+        src/image/EQImages.cpp
+        src/graph/WaveForm.cpp)
 
 target_compile_definitions(EQlibrium
         PUBLIC
