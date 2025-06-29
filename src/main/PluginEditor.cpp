@@ -23,6 +23,9 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     freqLeft(audioProcessor),
     gainSliderLeft(*audioProcessor.apvts.getParameter("Left Gain Slider"), "%"),
     gainSliderRight(*audioProcessor.apvts.getParameter("Right Gain Slider"), "%"),
+    fileChooserButton(imageNames::openFile),
+    microphoneButton(imageNames::microphone),
+    saveButton(imageNames::save),
     leftPeakFreqSliderAttachment(audioProcessor.apvts, "Left Peak Freq", peakFreqSliderLeft),
     leftPeakGainSliderAttachment(audioProcessor.apvts, "Left Peak Gain", peakGainSliderLeft),
     leftPeakQualitySliderAttachment(audioProcessor.apvts, "Left Peak Quality", peakQualitySliderLeft),
@@ -44,7 +47,10 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     leftGainAttachment(audioProcessor.apvts, "Left Gain Slider", gainSliderLeft),
     rightGainAttachment(audioProcessor.apvts, "Right Gain Slider", gainSliderRight),
     leftChannelButtonAttachment(audioProcessor.apvts, "Left Channel Button", channelButtonLeft),
-    rightChannelButtonAttachment(audioProcessor.apvts, "Right Channel Button", channelButtonRight) {
+    rightChannelButtonAttachment(audioProcessor.apvts, "Right Channel Button", channelButtonRight),
+    fileChooserAttachment(audioProcessor.apvts, "File Chooser Button", fileChooserButton), 
+    microphoneAttachment(audioProcessor.apvts, "Microphone Button", microphoneButton),
+    saveAttachment(audioProcessor.apvts, "Save Button", saveButton) {
     peakFreqSliderLeft.labels.add({0.f, "20Hz"});
     peakFreqSliderLeft.labels.add({1.f, "20kHz"});
     peakGainSliderLeft.labels.add({0.f, "-24dB"});
@@ -80,16 +86,32 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     for(auto* comp : getComps()) {
         addAndMakeVisible(comp);
     }
-    auto safePtr = SafePointer(this);
+    fileChooserButton.setLookAndFeel(&lnf);
+    microphoneButton.setLookAndFeel(&lnf);
+    saveButton.setLookAndFeel(&lnf);
     channelButtonLeft.setLookAndFeel(&lnf);
+    channelButtonRight.setLookAndFeel(&lnf);
+    auto safePtr = SafePointer(this);
+    fileChooserButton.onClick = [safePtr]() {
+        safePtr->audioProcessor.getFile();
+    };
+    microphoneButton.onClick = [safePtr]() {
+        if(auto* comp = safePtr.getComponent()) {
+            auto bypassed = comp->microphoneButton.getToggleState();
+        }
+    };
+    saveButton.onClick = [safePtr]() {
+        if(auto* comp = safePtr.getComponent()) {
+            auto bypassed = comp->saveButton.getToggleState();
+        }
+    };
     channelButtonLeft.onClick = [safePtr]() {
-        if(auto* comp = safePtr.getComponent() ) {
+        if(auto* comp = safePtr.getComponent()) {
             auto bypassed = comp->channelButtonLeft.getToggleState();
         }
     };
-    channelButtonRight.setLookAndFeel(&lnf);
     channelButtonRight.onClick = [safePtr]() {
-        if(auto* comp = safePtr.getComponent() ) {
+        if(auto* comp = safePtr.getComponent()) {
             auto bypassed = comp->channelButtonRight.getToggleState();
         }
     };
@@ -99,6 +121,9 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
 EQlibriumAudioProcessorEditor::~EQlibriumAudioProcessorEditor() {
     channelButtonLeft.setLookAndFeel(nullptr);
     channelButtonRight.setLookAndFeel(nullptr);
+    fileChooserButton.setLookAndFeel(nullptr);
+    microphoneButton.setLookAndFeel(nullptr);
+    saveButton.setLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -270,7 +295,7 @@ void EQlibriumAudioProcessorEditor::resized() {
     levelMeterLeft.setBounds(window_vumeter_left_rect);
     levelMeterRight.setBounds(window_vumeter_right_rect);
     // Channel Volume
-    auto gainBox = juce::Rectangle(12,195, 150, 50);
+    auto gainBox = juce::Rectangle(12, 195, 150, 50);
     auto gainL = gainBox.removeFromTop(gainBox.getHeight()/2);
     gainL.removeFromBottom(3);
     gainSliderLeft.setBounds(gainL);
@@ -278,13 +303,20 @@ void EQlibriumAudioProcessorEditor::resized() {
     gainR.removeFromTop(3);
     gainSliderRight.setBounds(gainR);
     // Channel on/off Buttons
-    auto onoffBox = juce::Rectangle(190,177, 37, 80);
+    auto onoffBox = juce::Rectangle(190, 177, 37, 80);
     auto onoffL = onoffBox.removeFromTop(onoffBox.getHeight()/2);
     onoffL.removeFromBottom(3);
     channelButtonLeft.setBounds(onoffL);
     auto onoffR = onoffBox.removeFromTop(onoffBox.getHeight());
     onoffR.removeFromTop(3);
     channelButtonRight.setBounds(onoffR);
+    // Normal buttons
+    auto fileChooser = juce::Rectangle(166, 50, 30, 30);
+    fileChooserButton.setBounds(fileChooser);
+    auto save = juce::Rectangle(202, 50, 30, 30);
+    saveButton.setBounds(save);
+    auto microphone = juce::Rectangle(166, 86, 30, 30);
+    microphoneButton.setBounds(microphone);
 }
 
 std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
@@ -313,6 +345,9 @@ std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
         &gainSliderLeft,
         &gainSliderRight,
         &channelButtonLeft,
-        &channelButtonRight
+        &channelButtonRight,
+        &fileChooserButton,
+        &microphoneButton,
+        &saveButton
     };
 }

@@ -21,8 +21,12 @@ juce::Image EQImages::getImage() {
     images.set(15, "notch.png");
     if(image < images.size()) {
         juce::Image setImage = juce::ImageFileFormat::loadFrom(juce::File(imagePath+"/"+images[image]));
+        width = setImage.getWidth();
+        height = setImage.getHeight();
         return setImage;
     }
     juce::Image setImage = juce::ImageFileFormat::loadFrom(juce::File(imagePath+"/"+images[0]));
+    width = setImage.getWidth();
+    height = setImage.getHeight();
     return setImage;
 }

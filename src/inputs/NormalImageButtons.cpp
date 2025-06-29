@@ -7,12 +7,7 @@ void LookAndFeelNormalImageButtons::drawToggleButton(
     bool shouldDrawButtonAsDown) {
     using namespace juce;
     if(auto* pb = dynamic_cast<NormalImageButtons*>(&toggleButton) ) {
-        auto bounds = toggleButton.getLocalBounds();
-        g.setColour(Colour(25,25,25));
-        g.fillRect(bounds);
-        auto stateColor = toggleButton.getToggleState() ? Colour(0,255,128) : Colours::dimgrey;
-        g.setColour(stateColor);
-        g.drawRect(bounds, 1.f);
+        
     }
 }
 
@@ -25,4 +20,6 @@ void NormalImageButtons::paint(juce::Graphics &g) {
         false,
         false
     );
+    auto img = EQImages(imageSet).getImage();
+    g.drawImage(img, 0 ,0, bounds.getWidth(), bounds.getHeight(), 0, 0, img.getWidth(), img.getHeight(), false);
 }

@@ -13,15 +13,11 @@ struct LookAndFeelNormalImageButtons : juce::LookAndFeel_V4 {
 };
 
 struct NormalImageButtons : juce::ToggleButton {
-    NormalImageButtons(imageNames val, float width, float height) {
+    NormalImageButtons(imageNames val) {
         imageSet = val;
-        this->width = width;
-        this->height = height;
     };
     void paint(juce::Graphics& g) override;
-    int imageSet;
+    imageNames imageSet;
 private:
-    float width, height;
     juce::String imagePath = juce::File::getSpecialLocation (juce::File::SpecialLocationType::currentExecutableFile).getSiblingFile("images").getFullPathName();
-    void getImages();
 };

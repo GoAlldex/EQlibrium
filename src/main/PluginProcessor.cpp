@@ -13,9 +13,7 @@ EQlibriumAudioProcessor::EQlibriumAudioProcessor()
                      #endif
                        )
 #endif
-{
-    getFile();
-}
+{ }
 
 EQlibriumAudioProcessor::~EQlibriumAudioProcessor() {}
 
@@ -57,17 +55,15 @@ const juce::String EQlibriumAudioProcessor::getProgramName (int index) { return 
 void EQlibriumAudioProcessor::changeProgramName (int index, const juce::String& newName) {}
 
 //==============================================================================
-
-void EQlibriumAudioProcessor::getFile()
-{
+void EQlibriumAudioProcessor::getFile() {
     formatManager.registerBasicFormats();
-    auto file = juce::File {"E:/Studium/Semester 10/Audiovisual Computing/MS3/Test_Music/Repiet - All I Need.mp3"};
-    auto* reader = formatManager.createReaderFor(file);
-    if(reader != nullptr) {
-        playSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
-        playSource->setLooping(true);
-    } else {
-        juce::JUCEApplicationBase::quit();
+    juce::FileChooser chooser("Datei ausw\u00e4hlen", juce::File::getSpecialLocation(juce::File::userDesktopDirectory), "*.wav; *.mp3");
+    if(chooser.browseForFileToOpen()) {
+        auto file = chooser.getResult();
+        juce::AudioFormatReader* reader = formatManager.createReaderFor(file);
+        if (reader != nullptr) {
+            playSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
+        }
     }
 }
 
@@ -361,6 +357,21 @@ juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::cre
     layout.add(std::make_unique<juce::AudioParameterBool>(
         "Right Channel Button",
         "Right Channel Button",
+        true,
+        attributes));
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        "File Chooser Button",
+        "File Chooser Button",
+        true,
+        attributes));
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        "Microphone Button",
+        "Microphone Button",
+        true,
+        attributes));
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        "Save Button",
+        "Save Button",
         true,
         attributes));
     return layout;

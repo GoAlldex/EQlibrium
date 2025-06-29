@@ -55,6 +55,7 @@ target_compile_definitions(EQlibrium
         JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0
         DONT_SET_USING_JUCE_NAMESPACE
+        JUCE_MODAL_LOOPS_PERMITTED=1
 )
 
 target_link_libraries(EQlibrium

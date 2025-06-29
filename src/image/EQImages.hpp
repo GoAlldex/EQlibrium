@@ -26,6 +26,7 @@ struct EQImages {
         image = val;
     }
     juce::Image getImage();
+    int width, height;
 private:
     int image;
     juce::String imagePath = juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentExecutableFile).getSiblingFile("images").getFullPathName();

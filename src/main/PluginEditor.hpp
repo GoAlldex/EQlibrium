@@ -8,7 +8,7 @@
 #include "../level_meter/LevelMeter.hpp"
 #include "../inputs/LoudnessSlider.hpp"
 #include "../inputs/ChannelButtons.hpp"
-#include "../inputs/ChannelButtons.hpp"
+#include "../inputs/NormalImageButtons.hpp"
 #include "../image/EQImages.hpp"
 
 //==============================================================================
@@ -75,6 +75,7 @@ private:
     LeftPathProducerComponent freqLeft;
     RightPathProducerComponent freqRight;
     ChannelButtons channelButtonLeft, channelButtonRight;
+    NormalImageButtons fileChooserButton, microphoneButton, saveButton;
     using APVTS = juce::AudioProcessorValueTreeState;
     using SliderAttachment = APVTS::SliderAttachment;
     SliderAttachment leftPeakFreqSliderAttachment,
@@ -94,7 +95,11 @@ private:
         leftGainAttachment,
         rightGainAttachment;
     using ButtonAttachment = APVTS::ButtonAttachment;
-    ButtonAttachment leftChannelButtonAttachment, rightChannelButtonAttachment;
+    ButtonAttachment leftChannelButtonAttachment,
+        rightChannelButtonAttachment,
+        fileChooserAttachment,
+        microphoneAttachment,
+        saveAttachment;
     LeftLevelMeterComponent levelMeterLeft;
     RightLevelMeterComponent levelMeterRight;
     std::vector<Component*> getComps();
