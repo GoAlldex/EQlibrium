@@ -26,14 +26,3 @@ void NormalImageButtons::paint(juce::Graphics &g) {
         false
     );
 }
-
-void NormalImageButtons::getImages() {
-    images[0] = "microphone.png";
-    images[1] = "save.png";
-    images[2] = "folder.png";
-    images[3] = "speaker.png";
-    images[4] = "settings.png";
-    images[5] = "play.png";
-    images[6] = "pause.png";
-    images[7] = "replay.png";
-}

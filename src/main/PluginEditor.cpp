@@ -111,8 +111,7 @@ void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
     g.fillRect(getLocalBounds());
     g.setColour(lineColour);
     g.drawRect(window_micro_rect.toFloat(), 0.3f);
-    Image logo_img = ImageFileFormat::loadFrom(File(path+"/logo2.png"));
-    g.drawImage(logo_img, 9, 9, 151, 151, 0, 0, 90, 90, false);
+    g.drawImage(EQImages(imageNames::logo2).getImage(), 9, 9, 151, 151, 0, 0, 90, 90, false);
     g.drawRect(window_settings_rect.toFloat(), 0.3f);
     g.drawRect(peakL.toFloat(), 0.3f);
     g.drawRect(peakR.toFloat(), 0.3f);
@@ -127,26 +126,21 @@ void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
     g.setColour(Colour(25,25,25));
     g.fillRect(window_channel_label_left.toFloat());
     g.fillRect(window_channel_label_right.toFloat());
-    Image left_channel_img = ImageFileFormat::loadFrom(File(path+"/left_channel.png"));
-    g.drawImage(left_channel_img, 0, 400, 30, 400, 0, 0, 30, 400, false);
-    Image right_channel_img = ImageFileFormat::loadFrom(File(path+"/right_channel.png"));
-    g.drawImage(right_channel_img, getLocalBounds().getWidth()-30, 400, 30, 400, 0, 0, 30,400, false);
+    g.drawImage(EQImages(imageNames::leftChannel).getImage(), 0, 400, 30, 400, 0, 0, 30, 400, false);
+    g.drawImage(EQImages(imageNames::rightChannel).getImage(), getLocalBounds().getWidth()-30, 400, 30, 400, 0, 0, 30,400, false);
     g.setColour(lineColour);
-    Image notch_img = ImageFileFormat::loadFrom(File(path+"/notch.png"));
     g.drawRect(peakLeftLabel.toFloat(), 0.3f);
-    g.drawImage(notch_img, 37, 277, 30, 90, 0, 0, 30, 90, false);
+    g.drawImage(EQImages(imageNames::notch).getImage(), 37, 277, 30, 90, 0, 0, 30, 90, false);
     g.drawRect(peakRightLabel.toFloat(), 0.3f);
-    g.drawImage(notch_img, peakR.getWidth()+43, 277, 30, 90, 0, 0, 30, 90, false);
-    Image highCut_img = ImageFileFormat::loadFrom(File(path+"/highpass.png"));
+    g.drawImage(EQImages(imageNames::notch).getImage(), peakR.getWidth()+43, 277, 30, 90, 0, 0, 30, 90, false);
     g.drawRect(highCutLeftLabel.toFloat(), 0.3f);
-    g.drawImage(highCut_img, 37, 390, 30, 90, 0, 0, 30, 90, false);
+    g.drawImage(EQImages(imageNames::highpass).getImage(), 37, 390, 30, 90, 0, 0, 30, 90, false);
     g.drawRect(highCutRightLabel.toFloat(), 0.3f);
-    g.drawImage(highCut_img, highCutR.getWidth()+43, 390, 30, 90, 0, 0, 30, 90, false);
-    Image lowCut_img = ImageFileFormat::loadFrom(File(path+"/lowpass.png"));
+    g.drawImage(EQImages(imageNames::highpass).getImage(), highCutR.getWidth()+43, 390, 30, 90, 0, 0, 30, 90, false);
     g.drawRect(lowCutLeftLabel.toFloat(), 0.3f);
-    g.drawImage(lowCut_img, 37, 501, 30, 90, 0, 0, 30, 90, false);
+    g.drawImage(EQImages(imageNames::lowpass).getImage(), 37, 501, 30, 90, 0, 0, 30, 90, false);
     g.drawRect(lowCutRightLabel.toFloat(), 0.3f);
-    g.drawImage(lowCut_img, lowCutR.getWidth()+43, 501, 30, 90, 0, 0, 30, 90, false);
+    g.drawImage(EQImages(imageNames::lowpass).getImage(), lowCutR.getWidth()+43, 501, 30, 90, 0, 0, 30, 90, false);
 }
 
 void EQlibriumAudioProcessorEditor::resized() {

@@ -2,17 +2,7 @@
 
 #include <JuceHeader.h>
 #include "../main/PluginProcessor.hpp"
-
-enum imageNames {
-    microphone,
-    save,
-    openFile,
-    speaker,
-    settings,
-    play,
-    pause,
-    replay
-};
+#include "../image/EQImages.hpp"
 
 struct LookAndFeelNormalImageButtons : juce::LookAndFeel_V4 {
     void drawToggleButton(
@@ -23,14 +13,15 @@ struct LookAndFeelNormalImageButtons : juce::LookAndFeel_V4 {
 };
 
 struct NormalImageButtons : juce::ToggleButton {
-    NormalImageButtons(int index) {
-        imageSet = index;
-        getImages();
+    NormalImageButtons(imageNames val, float width, float height) {
+        imageSet = val;
+        this->width = width;
+        this->height = height;
     };
     void paint(juce::Graphics& g) override;
     int imageSet;
 private:
+    float width, height;
     juce::String imagePath = juce::File::getSpecialLocation (juce::File::SpecialLocationType::currentExecutableFile).getSiblingFile("images").getFullPathName();
     void getImages();
-    juce::Array<juce::String> images;
 };

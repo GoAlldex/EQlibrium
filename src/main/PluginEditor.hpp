@@ -9,6 +9,7 @@
 #include "../inputs/LoudnessSlider.hpp"
 #include "../inputs/ChannelButtons.hpp"
 #include "../inputs/ChannelButtons.hpp"
+#include "../image/EQImages.hpp"
 
 //==============================================================================
 class EQlibriumAudioProcessorEditor  : public juce::AudioProcessorEditor

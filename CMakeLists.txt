@@ -46,7 +46,8 @@ target_sources(EQlibrium
         src/level_meter/LevelMeter.cpp
         src/inputs/LoudnessSlider.cpp
         src/inputs/ChannelButtons.cpp
-        src/inputs/NormalImageButtons.cpp)
+        src/inputs/NormalImageButtons.cpp
+        src/image/EQImages.cpp)
 
 target_compile_definitions(EQlibrium
         PUBLIC
