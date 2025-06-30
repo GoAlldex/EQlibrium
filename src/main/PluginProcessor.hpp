@@ -124,9 +124,13 @@ struct ChainSettings {
     float gainRight = 1.f;
     bool channelLeftButton = true;
     bool channelRightButton = true;
+    bool playButton = false;
+    bool replayButton = false;
     float leftPeakFreq {0}, leftPeakGainInDecibels{0}, leftPeakQuality{1.f}, rightPeakFreq {0}, rightPeakGainInDecibels{0}, rightPeakQuality{1.f};
     float leftLowCutFreq {0}, leftHighCutFreq {0}, rightLowCutFreq {0}, rightHighCutFreq {0};
     Slope leftLowCutSlope {Slope_12}, leftHighCutSlope {Slope_12}, rightLowCutSlope {Slope_12}, rightHighCutSlope {Slope_12};
+    void setPlay(bool val) { playButton = val; };
+    void setReplay(bool val) { replayButton = val; };
 };
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
@@ -248,6 +252,8 @@ public:
     juce::AudioFormatManager formatManager;
     std::unique_ptr<juce::AudioFormatReaderSource> playSource;
     void getFile();
+    void loop();
+    void play();
     float getRmsValue(const int channel) const;
     void smoothLoudness(juce::AudioBuffer<float>& buffer);
     juce::AudioThumbnailCache thumbnailCache;

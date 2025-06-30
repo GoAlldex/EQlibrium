@@ -4,7 +4,7 @@
 #include "../main/PluginProcessor.hpp"
 #include "../image/EQImages.hpp"
 
-struct LookAndFeelNormalImageButtons : juce::LookAndFeel_V4 {
+struct LookAndFeelPlayButton : juce::LookAndFeel_V4 {
     void drawToggleButton(
     juce::Graphics &g,
     juce::ToggleButton & toggleButton,
@@ -12,10 +12,11 @@ struct LookAndFeelNormalImageButtons : juce::LookAndFeel_V4 {
     bool shouldDrawButtonAsDown) override;
 };
 
-struct NormalImageButtons : juce::ToggleButton {
-    NormalImageButtons(imageNames val) {
-        imageSet = val;
+struct PlayButton : juce::ToggleButton {
+    PlayButton(imageNames play, imageNames pause) {
+        imagePlay = play;
+        imagePause = pause;
     };
     void paint(juce::Graphics& g) override;
-    imageNames imageSet;
+    imageNames imagePlay, imagePause;
 };

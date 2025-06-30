@@ -64,8 +64,15 @@ void EQlibriumAudioProcessor::getFile() {
         if (reader != nullptr) {
             thumbnail.setSource(new juce::FileInputSource(file));
             playSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
+            if(getChainSettings(apvts).replayButton) {
+                playSource->setLooping(true);
+            }
         }
     }
+}
+
+void EQlibriumAudioProcessor::loop() {
+    playSource->isLooping() ? playSource->setLooping(false) : playSource->setLooping(true);
 }
 
 juce::AudioThumbnail* EQlibriumAudioProcessor::getThumbnail() {
@@ -138,8 +145,10 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     updateFilters();
     juce::dsp::AudioBlock<float> block(buffer);
     if(playSource) {
-        juce::AudioSourceChannelInfo info(buffer);
-        playSource->getNextAudioBlock(info);
+        if(getChainSettings(apvts).playButton) {
+            juce::AudioSourceChannelInfo info(buffer);
+            playSource->getNextAudioBlock(info);
+        }
     }
     auto leftBlock = block.getSingleChannelBlock(0);
     juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
@@ -208,6 +217,8 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts) {
     settings.gainRight = apvts.getRawParameterValue("Right Gain Slider")->load();
     settings.channelLeftButton = apvts.getRawParameterValue("Left Channel Button")->load();
     settings.channelRightButton = apvts.getRawParameterValue("Right Channel Button")->load();
+    settings.playButton = apvts.getRawParameterValue("Play Button")->load();
+    settings.replayButton = apvts.getRawParameterValue("Replay Button")->load();
     return settings;
 }
 
@@ -377,6 +388,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::cre
     layout.add(std::make_unique<juce::AudioParameterBool>(
         "Save Button",
         "Save Button",
+        true,
+        attributes));
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        "Play Button",
+        "Play Button",
+        true,
+        attributes));
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        "Replay Button",
+        "Peplay Button",
         true,
         attributes));
     return layout;
