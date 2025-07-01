@@ -3,6 +3,10 @@
 #include <JuceHeader.h>
 #include "../main/PluginProcessor.hpp"
 
+/**
+ * @brief Struct VU-Level meter
+ * VU-level meter for left channel
+ */
 struct LeftLevelMeterComponent: juce::Component,
 juce::AudioProcessorParameter::Listener,
 juce::Timer {
@@ -21,6 +25,10 @@ private:
     juce::Rectangle<float> levelRect;
 };
 
+/**
+ * @brief Struct VU-Level meter
+ * VU-level meter for right channel
+ */
 struct RightLevelMeterComponent: juce::Component,
 juce::AudioProcessorParameter::Listener,
 juce::Timer {

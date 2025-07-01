@@ -55,6 +55,14 @@ const juce::String EQlibriumAudioProcessor::getProgramName (int index) { return 
 void EQlibriumAudioProcessor::changeProgramName (int index, const juce::String& newName) {}
 
 //==============================================================================
+
+/**
+ * @brief File chooser
+ * Open default file Handler
+ * Read file data
+ * Load data for waveform display
+ * Set audio loop when replay button is on active state
+ */
 void EQlibriumAudioProcessor::getFile() {
     formatManager.registerBasicFormats();
     juce::FileChooser chooser("Datei ausw\u00e4hlen", juce::File::getSpecialLocation(juce::File::userDesktopDirectory), "*.wav; *.mp3");
@@ -71,17 +79,33 @@ void EQlibriumAudioProcessor::getFile() {
     }
 }
 
+/**
+ * @brief Set loop
+ * Set loop for audio data (if audio data exists)
+ */
 void EQlibriumAudioProcessor::loop() {
     if(playSource) {
         playSource->isLooping() ? playSource->setLooping(false) : playSource->setLooping(true);
     }
 }
 
+/**
+ * @brief Getter for waveform display
+ * Used in ./graph/WaveForm.cpp for display waveform left and right channel
+ * @return juce::AudioThumbnail* 
+ */
 juce::AudioThumbnail* EQlibriumAudioProcessor::getThumbnail() {
     return &thumbnail;
 }
 
 //==============================================================================
+/**
+ * @brief Prepare to play
+ * Set filters
+ * Set VU-level with delay
+ * @param sampleRate 
+ * @param samplesPerBlock 
+ */
 void EQlibriumAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     //apvts.processor.setBusesLayout(BusesLayout().);
@@ -124,6 +148,11 @@ bool EQlibriumAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 }
 #endif
 
+/**
+ * @brief Smooth loudness
+ * Slowly decrease/increase of gain from old to new gain value
+ * @param buffer 
+ */
 void EQlibriumAudioProcessor::smoothLoudness(juce::AudioBuffer<float>& buffer) {
     if (juce::approximatelyEqual(getChainSettings(apvts).gainLeft, previousChainSettings.gainLeft)) {
         buffer.applyGain(0, 0, buffer.getNumSamples(), previousChainSettings.gainLeft);
@@ -138,6 +167,14 @@ void EQlibriumAudioProcessor::smoothLoudness(juce::AudioBuffer<float>& buffer) {
     previousChainSettings = getChainSettings(apvts);
 }
 
+/**
+ * @brief Process block
+ * Play audio data (when play == true and audio data exists)
+ * Set filters lowcut, highcut, notch
+ * Set values for VU-level display
+ * @param buffer 
+ * @param midiMessages 
+ */
 void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -146,12 +183,11 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         buffer.clear (i, 0, buffer.getNumSamples());
     updateFilters();
     juce::dsp::AudioBlock<float> block(buffer);
-    if(playSource) {
-        if(getChainSettings(apvts).playButton) {
-            juce::AudioSourceChannelInfo info(buffer);
-            playSource->getNextAudioBlock(info);
-        }
+    if(playSource && getChainSettings(apvts).playButton) {
+        juce::AudioSourceChannelInfo info(buffer);
+        playSource->getNextAudioBlock(info);
     }
+    smoothLoudness(buffer);
     auto leftBlock = block.getSingleChannelBlock(0);
     juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
     leftChain.process(leftContext);
@@ -169,7 +205,6 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
     rightChain.process(rightContext);
     rightChannelFifo.update(buffer);
-    smoothLoudness(buffer);
     rmsLevelRight.skip(buffer.getNumSamples());
     {
         const auto value = juce::Decibels::gainToDecibels(buffer.getRMSLevel(1, 0, buffer.getNumSamples()));
@@ -199,6 +234,12 @@ void EQlibriumAudioProcessor::setStateInformation (const void* data, int sizeInB
     }
 }
 
+/**
+ * @brief Get the Chain Settings object
+ * Load previous settings into chainsettings
+ * @param apvts 
+ * @return ChainSettings 
+ */
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts) {
     ChainSettings settings;
     settings.leftLowCutFreq = apvts.getRawParameterValue("Left LowCut Freq")->load();
@@ -224,6 +265,13 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts) {
     return settings;
 }
 
+/**
+ * @brief Peak filter
+ * Peak filter for left channel
+ * @param chainSettings 
+ * @param sampleRate 
+ * @return Coefficients 
+ */
 Coefficients makeLeftPeakFilter(const ChainSettings& chainSettings, double sampleRate) {
     return juce::dsp::IIR::Coefficients<float>::makePeakFilter(
         sampleRate,
@@ -235,6 +283,13 @@ Coefficients makeLeftPeakFilter(const ChainSettings& chainSettings, double sampl
     );
 }
 
+/**
+ * @brief Peak filter
+ * Peak filter for right channel
+ * @param chainSettings 
+ * @param sampleRate 
+ * @return Coefficients 
+ */
 Coefficients makeRightPeakFilter(const ChainSettings& chainSettings, double sampleRate) {
     return juce::dsp::IIR::Coefficients<float>::makePeakFilter(
         sampleRate,
@@ -246,6 +301,11 @@ Coefficients makeRightPeakFilter(const ChainSettings& chainSettings, double samp
     );
 }
 
+/**
+ * @brief Update peak filter
+ * Make left/right channel peak filter
+ * @param chainSettings 
+ */
 void EQlibriumAudioProcessor::updatePeakFilter(const ChainSettings &chainSettings) {
     auto leftPeakCoefficients = makeLeftPeakFilter(chainSettings, getSampleRate());
     auto rightPeakCoefficients = makeRightPeakFilter(chainSettings, getSampleRate());
@@ -253,10 +313,21 @@ void EQlibriumAudioProcessor::updatePeakFilter(const ChainSettings &chainSetting
     updateCoefficients(rightChain.get<Peak>().coefficients, rightPeakCoefficients);
 }
 
+/**
+ * @brief Update values
+ * Replace old audio values with new values from filters 
+ * @param old 
+ * @param replacements 
+ */
 void updateCoefficients(Coefficients &old, const Coefficients &replacements) {
     *old = *replacements;
 }
 
+/**
+ * @brief Update lowcut filter
+ * Make left/right channel lowcut filter
+ * @param chainSettings 
+ */
 void EQlibriumAudioProcessor::updateLowCutFilters(const ChainSettings& chainSettings) {
     auto leftLowCutCoefficients = makeLeftLowCutFilter(chainSettings, getSampleRate());
     auto rightLowCutCoefficients = makeRightLowCutFilter(chainSettings, getSampleRate());
@@ -266,6 +337,11 @@ void EQlibriumAudioProcessor::updateLowCutFilters(const ChainSettings& chainSett
     updateCutFilter(rightLowCut, rightLowCutCoefficients, chainSettings.rightLowCutSlope);
 }
 
+/**
+ * @brief Update highcut filter
+ * Make left/right channel highcut filter
+ * @param chainSettings 
+ */
 void EQlibriumAudioProcessor::updateHighCutFilters(const ChainSettings& chainSettings) {
     auto leftHighCutCoefficients = makeLeftHighCutFilter(chainSettings, getSampleRate());
     auto rightHighCutCoefficients = makeRightHighCutFilter(chainSettings, getSampleRate());
@@ -275,6 +351,10 @@ void EQlibriumAudioProcessor::updateHighCutFilters(const ChainSettings& chainSet
     updateCutFilter(rightHighCut, rightHighCutCoefficients, chainSettings.rightHighCutSlope);
 }
 
+/**
+ * @brief Update all filters
+ * Update all filters
+ */
 void EQlibriumAudioProcessor::updateFilters() {
     auto chainSettings = getChainSettings(apvts);
     updatePeakFilter(chainSettings);
@@ -282,6 +362,12 @@ void EQlibriumAudioProcessor::updateFilters() {
     updateHighCutFilters(chainSettings);
 }
 
+/**
+ * @brief VU-level getter
+ * Getter for VU-level meter values in ./level_meter/LevelMeter.cpp
+ * @param channel 
+ * @return float 
+ */
 float EQlibriumAudioProcessor::getRmsValue(const int channel) const {
     jassert(channel == 0 || channel == 1);
     if(channel == 0) {
@@ -292,6 +378,11 @@ float EQlibriumAudioProcessor::getRmsValue(const int channel) const {
     return 0.f;
 }
 
+/**
+ * @brief Layout
+ * Set all sliders, buttons... (not visible)
+ * @return juce::AudioProcessorValueTreeState::ParameterLayout 
+ */
 juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::createParameterLayout()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;

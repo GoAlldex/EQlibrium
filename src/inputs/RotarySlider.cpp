@@ -1,5 +1,20 @@
 #include "RotarySlider.hpp"
 
+/**
+ * @brief LookAndFeel rotary slider
+ * Draw left/right text from rotary slider (mi-max values)
+ * Draw centered text in rotary slider (current value)
+ * Draw slider knob
+ * @param g 
+ * @param x 
+ * @param y 
+ * @param width 
+ * @param height 
+ * @param sliderPosProportional 
+ * @param rotaryStartAngle 
+ * @param rotaryEndAngle 
+ * @param slider 
+ */
 void LookAndFeelRotarySlider::drawRotarySlider(
     juce::Graphics & g,
     int x,
@@ -50,6 +65,11 @@ void LookAndFeelRotarySlider::drawRotarySlider(
     }
 }
 
+/**
+ * @brief Paint
+ * Draw rotary slider
+ * @param g 
+ */
 void RotarySliderWithLabels::paint(juce::Graphics &g) {
     using namespace juce;
     auto startAng = degreesToRadians(180.f+45.f);
@@ -99,6 +119,11 @@ void RotarySliderWithLabels::paint(juce::Graphics &g) {
     }
 }
 
+/**
+ * @brief Slider bounds
+ * Set slider size and position
+ * @return juce::Rectangle<int> 
+ */
 juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const {
     auto bounds = getLocalBounds();
     auto size = juce::jmin(bounds.getWidth(), bounds.getHeight());
@@ -110,6 +135,12 @@ juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const {
     return r;
 }
 
+/**
+ * @brief Display string
+ * Get current filter value
+ * if value is bigger than 1k divide value by 1000 and set k
+ * @return juce::String 
+ */
 juce::String RotarySliderWithLabels::getDisplayString() const {
     if(auto* choiceParam = dynamic_cast<juce::AudioParameterChoice*>(param)) {
         return choiceParam->getCurrentChoiceName();

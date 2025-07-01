@@ -3,6 +3,10 @@
 #include <JuceHeader.h>
 #include "../main/PluginProcessor.hpp"
 
+/**
+ * @brief Declaration LookAndFeel loudness slider
+ * 
+ */
 struct LookAndFeelLinearSlider : juce::LookAndFeel_V4 {
     void drawLinearSlider(
         juce::Graphics&,
@@ -17,6 +21,10 @@ struct LookAndFeelLinearSlider : juce::LookAndFeel_V4 {
         juce::Slider&) override;
 };
 
+/**
+ * @brief Struct loudness slider
+ * 
+ */
 struct LinearSliderWithLabels : juce::Slider {
     LinearSliderWithLabels(
         juce::RangedAudioParameter& rap,

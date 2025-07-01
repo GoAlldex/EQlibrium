@@ -1,5 +1,10 @@
 #include "EQImages.hpp"
 
+/**
+ * @brief Get images
+ * Get UI image
+ * @return juce::Image 
+ */
 juce::Image EQImages::getImage() {
     juce::Array<juce::String> images;
     images.resize(16);

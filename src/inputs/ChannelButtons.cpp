@@ -1,5 +1,13 @@
 #include "ChannelButtons.hpp"
 
+/**
+ * @brief LookAndFeel channel Button
+ * Draw border green or dimgrey (Toggle state true/false)
+ * @param g 
+ * @param toggleButton 
+ * @param shouldDrawButtonAsHighlighted 
+ * @param shouldDrawButtonAsDown 
+ */
 void LookAndFeelChannelButtons::drawToggleButton(
     juce::Graphics &g,
     juce::ToggleButton & toggleButton,
@@ -16,6 +24,11 @@ void LookAndFeelChannelButtons::drawToggleButton(
     }
 }
 
+/**
+ * @brief Paint
+ * Draw button with char R or L
+ * @param g 
+ */
 void ChannelButtons::paint(juce::Graphics &g) {
     using namespace juce;
     auto bounds = getLocalBounds();

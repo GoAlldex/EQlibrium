@@ -1,5 +1,13 @@
 #include "NormalImageButtons.hpp"
 
+/**
+ * @brief LookAndFeel image buttons
+ * Empty (no toggle state visual)
+ * @param g 
+ * @param toggleButton 
+ * @param shouldDrawButtonAsHighlighted 
+ * @param shouldDrawButtonAsDown 
+ */
 void LookAndFeelNormalImageButtons::drawToggleButton(
     juce::Graphics &g,
     juce::ToggleButton & toggleButton,
@@ -11,6 +19,11 @@ void LookAndFeelNormalImageButtons::drawToggleButton(
     }
 }
 
+/**
+ * @brief Paint
+ * Draw image button
+ * @param g 
+ */
 void NormalImageButtons::paint(juce::Graphics &g) {
     using namespace juce;
     auto bounds = getLocalBounds();

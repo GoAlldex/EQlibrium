@@ -9,6 +9,11 @@ enum FFTOrder {
     order8192 = 13
 };
 
+/**
+ * @brief Template for FFT data
+ * Generates FFT data
+ * @tparam BlockType 
+ */
 template<typename BlockType>
 struct FFTDataGenerator {
     void produceFFTDataForRendering(const juce::AudioBuffer<float>& audioData, const float negativeInfinity) {
@@ -49,6 +54,11 @@ private:
     Fifo<BlockType> fftDataFifo;
 };
 
+/**
+ * @brief Template for analyzer path
+ * Sets lines for drawing
+ * @tparam PathType 
+ */
 template<typename PathType>
 struct AnalyzerPathGenerator {
     void generatePath(
@@ -90,6 +100,10 @@ private:
     Fifo<PathType> pathFifo;
 };
 
+/**
+ * @brief Struct path producer
+ * 
+ */
 struct PathProducer {
     PathProducer(SingleChannelSampleFifo<EQlibriumAudioProcessor::BlockType>& scsf) :
     ChannelFifo(&scsf) {
@@ -106,6 +120,10 @@ private:
     juce::Path ChannelFFTPath;
 };
 
+/**
+ * @brief Struct left path
+ * 
+ */
 struct LeftPathProducerComponent : juce::Component,
 juce::AudioProcessorParameter::Listener,
 juce::Timer {
@@ -127,6 +145,10 @@ private:
     PathProducer pathProducer;
 };
 
+/**
+ * @brief struct right path
+ * 
+ */
 struct RightPathProducerComponent: juce::Component,
 juce::AudioProcessorParameter::Listener,
 juce::Timer {

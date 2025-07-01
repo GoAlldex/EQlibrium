@@ -3,6 +3,12 @@
 #include "PluginEditor.hpp"
 
 //==============================================================================
+
+/**
+ * @brief Construct a new EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor object
+ * Declaration of all sliders, buttons and graphs
+ * @param p 
+ */
 EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p),
     peakFreqSliderLeft(*audioProcessor.apvts.getParameter("Left Peak Freq"), "Hz"),
@@ -137,6 +143,11 @@ EQlibriumAudioProcessorEditor::~EQlibriumAudioProcessorEditor() {
 }
 
 //==============================================================================
+/**
+ * @brief Paint
+ * Paint  all standalone/VST3 elements (without own paint method)
+ * @param g 
+ */
 void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
     using namespace juce;
     auto path = File::getSpecialLocation (File::SpecialLocationType::currentExecutableFile).getSiblingFile("images").getFullPathName();
@@ -181,6 +192,10 @@ void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
     waveGraph.setBounds(waveForm);
 }
 
+/**
+ * @brief Resized
+ * Set positions, bounds and size of each element (gui rects, slider, buttons, graph)
+ */
 void EQlibriumAudioProcessorEditor::resized() {
     window_full_rect = getLocalBounds();
     auto h = window_full_rect.getHeight();
@@ -338,6 +353,11 @@ void EQlibriumAudioProcessorEditor::resized() {
     replayButton.setBounds(replay);
 }
 
+/**
+ * @brief Get components
+ * return all components (for make visible)
+ * @return std::vector<juce::Component*> 
+ */
 std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
 {
     return {

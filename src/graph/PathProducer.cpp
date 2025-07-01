@@ -1,5 +1,11 @@
 #include "PathProducer.hpp"
 
+/**
+ * @brief Process
+ * Set draw path for analyser
+ * @param fftBounds 
+ * @param sampleRate 
+ */
 void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate) {
     juce::AudioBuffer<float> tempIncomingBuffer;
     while(ChannelFifo->getNumCompleteBuffersAvailable() > 0) {
@@ -39,6 +45,11 @@ void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate) 
 
 //==============================================================================
 
+/**
+ * @brief Construct a new Left Path Producer Component:: Left Path Producer Component object
+ * Set timer and listener for left
+ * @param p 
+ */
 LeftPathProducerComponent::LeftPathProducerComponent(EQlibriumAudioProcessor& p) :
 audioProcessor(p),
 pathProducer(audioProcessor.rightChannelFifo) {
@@ -49,6 +60,10 @@ pathProducer(audioProcessor.rightChannelFifo) {
     startTimerHz(60);
 }
 
+/**
+ * @brief Destroy the Left Path Producer Component:: Left Path Producer Component object
+ * Remove listener left
+ */
 LeftPathProducerComponent::~LeftPathProducerComponent() {
     const auto& params = audioProcessor.getParameters();
     for(auto param : params) {
@@ -56,10 +71,20 @@ LeftPathProducerComponent::~LeftPathProducerComponent() {
     }
 }
 
+/**
+ * @brief Paramater changed
+ * For listener left
+ * @param parameterIndex 
+ * @param newValue 
+ */
 void LeftPathProducerComponent::parameterValueChanged(int parameterIndex, float newValue) {
     parametersChanged.set(true);
 }
 
+/**
+ * @brief Timer callback
+ * Repiant analyser left
+ */
 void LeftPathProducerComponent::timerCallback() {
     auto fftBounds = getLocalBounds().toFloat();
     auto sampleRate = audioProcessor.getSampleRate();
@@ -67,6 +92,11 @@ void LeftPathProducerComponent::timerCallback() {
     repaint();
 }
 
+/**
+ * @brief Paint
+ * Paint analyser path left
+ * @param g 
+ */
 void LeftPathProducerComponent::paint(juce::Graphics& g) {
     using namespace juce;
     g.fillAll(Colour(50,50,50));
@@ -120,6 +150,10 @@ void LeftPathProducerComponent::paint(juce::Graphics& g) {
     g.strokePath(rightChannelFFTPath, PathStrokeType(2.f));
 }
 
+/**
+ * @brief Resize
+ * Resize analyser elements left
+ */
 void LeftPathProducerComponent::resized() {
     using namespace juce;
     background = Image(Image::PixelFormat::RGB, getWidth(), getHeight(), true);
@@ -170,6 +204,11 @@ void LeftPathProducerComponent::resized() {
     }
 }
 
+/**
+ * @brief Render area
+ * (Removable)
+ * @return juce::Rectangle<int> 
+ */
 juce::Rectangle<int> LeftPathProducerComponent::getRenderArea() {
     auto bounds = getLocalBounds();
     bounds.removeFromTop(0);
@@ -179,6 +218,11 @@ juce::Rectangle<int> LeftPathProducerComponent::getRenderArea() {
     return bounds;
 }
 
+/**
+ * @brief Render analyser area
+ * Smaller box left
+ * @return juce::Rectangle<int> 
+ */
 juce::Rectangle<int> LeftPathProducerComponent::getAnalysisArea() {
     auto bounds = getRenderArea();
     bounds.removeFromLeft(19);
@@ -190,6 +234,11 @@ juce::Rectangle<int> LeftPathProducerComponent::getAnalysisArea() {
 
 //==============================================================================
 
+/**
+ * @brief Construct a new Right Path Producer Component:: Right Path Producer Component object
+ * Set timer and listener for right
+ * @param p 
+ */
 RightPathProducerComponent::RightPathProducerComponent(EQlibriumAudioProcessor& p) :
 audioProcessor(p),
 pathProducer(audioProcessor.leftChannelFifo) {
@@ -200,6 +249,10 @@ pathProducer(audioProcessor.leftChannelFifo) {
     startTimerHz(60);
 }
 
+/**
+ * @brief Destroy the Right Path Producer Component:: Right Path Producer Component object
+ * Remove listener right
+ */
 RightPathProducerComponent::~RightPathProducerComponent() {
     const auto& params = audioProcessor.getParameters();
     for(auto param : params) {
@@ -207,10 +260,20 @@ RightPathProducerComponent::~RightPathProducerComponent() {
     }
 }
 
+/**
+ * @brief Paramater changed
+ * For listener right
+ * @param parameterIndex 
+ * @param newValue 
+ */
 void RightPathProducerComponent::parameterValueChanged(int parameterIndex, float newValue) {
     parametersChanged.set(true);
 }
 
+/**
+ * @brief Timer callback
+ * Repiant analyser right
+ */
 void RightPathProducerComponent::timerCallback() {
     auto fftBounds = getLocalBounds().toFloat();
     auto sampleRate = audioProcessor.getSampleRate();
@@ -218,6 +281,11 @@ void RightPathProducerComponent::timerCallback() {
     repaint();
 }
 
+/**
+ * @brief Paint
+ * Paint analyser path right
+ * @param g 
+ */
 void RightPathProducerComponent::paint(juce::Graphics& g) {
     using namespace juce;
     g.fillAll(Colour(50,50,50));
@@ -271,6 +339,10 @@ void RightPathProducerComponent::paint(juce::Graphics& g) {
     g.strokePath(rightChannelFFTPath, PathStrokeType(2.f));
 }
 
+/**
+ * @brief Resize
+ * Resize analyser elements right
+ */
 void RightPathProducerComponent::resized() {
     using namespace juce;
     background = Image(Image::PixelFormat::RGB, getWidth(), getHeight(), true);
@@ -321,6 +393,11 @@ void RightPathProducerComponent::resized() {
     }
 }
 
+/**
+ * @brief Render area
+ * (Removable)
+ * @return juce::Rectangle<int> 
+ */
 juce::Rectangle<int> RightPathProducerComponent::getRenderArea() {
     auto bounds = getLocalBounds();
     bounds.removeFromTop(0);
@@ -330,6 +407,11 @@ juce::Rectangle<int> RightPathProducerComponent::getRenderArea() {
     return bounds;
 }
 
+/**
+ * @brief Render analyser area
+ * Smaller box right
+ * @return juce::Rectangle<int> 
+ */
 juce::Rectangle<int> RightPathProducerComponent::getAnalysisArea() {
     auto bounds = getRenderArea();
     bounds.removeFromLeft(19);

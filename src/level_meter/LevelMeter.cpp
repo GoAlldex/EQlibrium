@@ -1,10 +1,19 @@
 #include "LevelMeter.hpp"
 
+/**
+ * @brief Construct a new Left Level Meter Component:: Left Level Meter Component object
+ * Set update timer for left channel paint
+ * @param p 
+ */
 LeftLevelMeterComponent::LeftLevelMeterComponent(EQlibriumAudioProcessor& p) :
 audioProcessor(p) {
     startTimerHz(60);
 }
 
+/**
+ * @brief Destroy the Left Level Meter Component:: Left Level Meter Component object
+ * Remove listener for left channel
+ */
 LeftLevelMeterComponent::~LeftLevelMeterComponent() {
     const auto& params = audioProcessor.getParameters();
     for(auto param : params) {
@@ -12,6 +21,11 @@ LeftLevelMeterComponent::~LeftLevelMeterComponent() {
     }
 }
 
+/**
+ * @brief Paint VU-Level meter
+ * Paint VU-Level meter left
+ * @param g 
+ */
 void LeftLevelMeterComponent::paint(juce::Graphics& g) {
     using namespace juce;
     auto bounds = levelRect;
@@ -31,10 +45,19 @@ void LeftLevelMeterComponent::paint(juce::Graphics& g) {
     g.fillRect(bounds.removeFromLeft(scaleX));
 }
 
+/**
+ * @brief Resize method
+ * Resize display elements before paint (removable, left)
+ */
 void LeftLevelMeterComponent::resized() {
     levelRect = getLocalBounds().toFloat();
 }
 
+/**
+ * @brief Timer callback
+ * Get left value from ./main/pluginProcessor.cpp
+ * Paint new VU-Level left
+ */
 void LeftLevelMeterComponent::timerCallback() {
     setLevel(audioProcessor.getRmsValue(0));
     repaint();
@@ -42,11 +65,20 @@ void LeftLevelMeterComponent::timerCallback() {
 
 //==============================================================================
 
+/**
+ * @brief Construct a new Right Level Meter Component:: Right Level Meter Component object
+ * Set update timer for right channel paint
+ * @param p 
+ */
 RightLevelMeterComponent::RightLevelMeterComponent(EQlibriumAudioProcessor& p) :
 audioProcessor(p) {
     startTimerHz(60);
 }
 
+/**
+ * @brief Destroy the Right Level Meter Component:: Right Level Meter Component object
+ * Remove listener for right channel
+ */
 RightLevelMeterComponent::~RightLevelMeterComponent() {
     const auto& params = audioProcessor.getParameters();
     for(auto param : params) {
@@ -54,6 +86,11 @@ RightLevelMeterComponent::~RightLevelMeterComponent() {
     }
 }
 
+/**
+ * @brief Paint VU-Level meter
+ * Paint VU-Level meter right
+ * @param g 
+ */
 void RightLevelMeterComponent::paint(juce::Graphics& g) {
     using namespace juce;
     auto bounds = levelRect;
@@ -73,10 +110,19 @@ void RightLevelMeterComponent::paint(juce::Graphics& g) {
     g.fillRect(bounds.removeFromLeft(scaleX));
 }
 
+/**
+ * @brief Resize method
+ * Resize display elements before paint (removable, right)
+ */
 void RightLevelMeterComponent::resized() {
     levelRect = getLocalBounds().toFloat();
 }
 
+/**
+ * @brief Timer callback
+ * Get right value from ./main/pluginProcessor.cpp
+ * Paint new VU-Level right
+ */
 void RightLevelMeterComponent::timerCallback() {
     setLevel(audioProcessor.getRmsValue(1));
     repaint();

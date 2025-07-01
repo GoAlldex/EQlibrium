@@ -4,6 +4,10 @@
 #include "../main/PluginProcessor.hpp"
 #include "../image/EQImages.hpp"
 
+/**
+ * @brief LookAndFeel play button
+ * 
+ */
 struct LookAndFeelPlayButton : juce::LookAndFeel_V4 {
     void drawToggleButton(
     juce::Graphics &g,
@@ -12,6 +16,10 @@ struct LookAndFeelPlayButton : juce::LookAndFeel_V4 {
     bool shouldDrawButtonAsDown) override;
 };
 
+/**
+ * @brief Struct play button
+ * 
+ */
 struct PlayButton : juce::ToggleButton {
     PlayButton(imageNames play, imageNames pause) {
         imagePlay = play;

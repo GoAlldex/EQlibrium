@@ -15,13 +15,16 @@
 #include "../inputs/ReplayButton.hpp"
 
 //==============================================================================
+
+/**
+ * @brief Include header + definition
+ * All visuals variables in this standalone/VTS3 are definded down here
+ */
 class EQlibriumAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
     EQlibriumAudioProcessorEditor (EQlibriumAudioProcessor&);
     ~EQlibriumAudioProcessorEditor() override;
-
-    //==============================================================================
     void paint(juce::Graphics&) override;
     void resized() override;
     juce::Rectangle<int> window_full_rect;

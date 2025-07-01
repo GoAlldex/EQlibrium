@@ -3,6 +3,10 @@
 #include <JuceHeader.h>
 #include "../main/PluginProcessor.hpp"
 
+/**
+ * @brief Struct left filter graph
+ * 
+ */
 struct LeftResponseCurveComponent: juce::Component,
 juce::AudioProcessorParameter::Listener,
 juce::Timer {
@@ -23,6 +27,10 @@ private:
     juce::Rectangle<int> getAnalysisArea();
 };
 
+/**
+ * @brief Struct right filter graph
+ * 
+ */
 struct RightResponseCurveComponent: juce::Component,
 juce::AudioProcessorParameter::Listener,
 juce::Timer {

@@ -1,5 +1,16 @@
 #include "PlayButton.hpp"
 
+/**
+ * @brief LookAndFeel play button
+ * Draw play image
+ * Draw pause image
+ * Toggle state false = play image
+ * Toggle state true = pause image
+ * @param g 
+ * @param toggleButton 
+ * @param shouldDrawButtonAsHighlighted 
+ * @param shouldDrawButtonAsDown 
+ */
 void LookAndFeelPlayButton::drawToggleButton(
     juce::Graphics &g,
     juce::ToggleButton & toggleButton,
@@ -13,6 +24,11 @@ void LookAndFeelPlayButton::drawToggleButton(
     }
 }
 
+/**
+ * @brief Paint
+ * Draw play/pause button
+ * @param g 
+ */
 void PlayButton::paint(juce::Graphics &g) {
     using namespace juce;
     auto smRect = Rectangle(1, 1, getLocalBounds().getWidth()-2, getLocalBounds().getHeight()-2);

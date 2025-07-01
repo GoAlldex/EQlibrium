@@ -1,5 +1,15 @@
 #include "ReplayButton.hpp"
 
+/**
+ * @brief LookAndFeel replay button
+ * Draw replay image
+ * Toggle state false = white replay image
+ * Toggle state true = green replay image
+ * @param g 
+ * @param toggleButton 
+ * @param shouldDrawButtonAsHighlighted 
+ * @param shouldDrawButtonAsDown 
+ */
 void LookAndFeelReplayButton::drawToggleButton(
     juce::Graphics &g,
     juce::ToggleButton & toggleButton,
@@ -15,6 +25,11 @@ void LookAndFeelReplayButton::drawToggleButton(
     }
 }
 
+/**
+ * @brief Paint
+ * Draw replay button
+ * @param g 
+ */
 void ReplayButton::paint(juce::Graphics &g) {
     using namespace juce;
     getLookAndFeel().drawToggleButton(

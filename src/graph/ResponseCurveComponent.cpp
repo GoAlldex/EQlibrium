@@ -1,5 +1,10 @@
 #include "ResponseCurveComponent.hpp"
 
+/**
+ * @brief Construct a new Left Response Curve Component:: Left Response Curve Component object
+ * Set timer and listener for left response graph
+ * @param p 
+ */
 LeftResponseCurveComponent::LeftResponseCurveComponent(EQlibriumAudioProcessor& p) :
 audioProcessor(p) {
     const auto& params = audioProcessor.getParameters();
@@ -10,6 +15,10 @@ audioProcessor(p) {
     startTimerHz(30);
 }
 
+/**
+ * @brief Destroy the Left Response Curve Component:: Left Response Curve Component object
+ * Remove left listener
+ */
 LeftResponseCurveComponent::~LeftResponseCurveComponent() {
     const auto& params = audioProcessor.getParameters();
     for(auto param : params) {
@@ -17,10 +26,21 @@ LeftResponseCurveComponent::~LeftResponseCurveComponent() {
     }
 }
 
+/**
+ * @brief Parameter changed
+ * For listener left
+ * @param parameterIndex 
+ * @param newValue 
+ */
 void LeftResponseCurveComponent::parameterValueChanged(int parameterIndex, float newValue) {
     parametersChanged.set(true);
 }
 
+/**
+ * @brief Timer callback
+ * Update filter
+ * Repaint left graph
+ */
 void LeftResponseCurveComponent::timerCallback() {
     auto fftBounds = getLocalBounds().toFloat();
     auto sampleRate = audioProcessor.getSampleRate();
@@ -30,6 +50,10 @@ void LeftResponseCurveComponent::timerCallback() {
     repaint();
 }
 
+/**
+ * @brief Update
+ * Update left filters
+ */
 void LeftResponseCurveComponent::updateChain() {
     auto chainSettings = getChainSettings(audioProcessor.apvts);
     auto leftPeakCoefficients = makeLeftPeakFilter(chainSettings, audioProcessor.getSampleRate());
@@ -40,6 +64,11 @@ void LeftResponseCurveComponent::updateChain() {
     updateCutFilter(monoChain.get<HighCut>(), leftHighCutCoefficients, chainSettings.leftHighCutSlope);
 }
 
+/**
+ * @brief Paint
+ * Paint left filter
+ * @param g 
+ */
 void LeftResponseCurveComponent::paint(juce::Graphics& g) {
     using namespace juce;
     g.fillAll(Colour(50,50,50));
@@ -101,6 +130,10 @@ void LeftResponseCurveComponent::paint(juce::Graphics& g) {
     g.strokePath(responseCurve, PathStrokeType(2.f));
 }
 
+/**
+ * @brief Resize
+ * Resize elemenets before paint
+ */
 void LeftResponseCurveComponent::resized() {
     using namespace juce;
     background = Image(Image::PixelFormat::RGB, getWidth(), getHeight(), true);
@@ -172,6 +205,11 @@ void LeftResponseCurveComponent::resized() {
     }
 }
 
+/**
+ * @brief Render area
+ * (Removable)
+ * @return juce::Rectangle<int> 
+ */
 juce::Rectangle<int> LeftResponseCurveComponent::getRenderArea() {
     auto bounds = getLocalBounds();
     bounds.removeFromTop(0);
@@ -181,6 +219,11 @@ juce::Rectangle<int> LeftResponseCurveComponent::getRenderArea() {
     return bounds;
 }
 
+/**
+ * @brief Analysis area
+ * Resize default draw space left
+ * @return juce::Rectangle<int> 
+ */
 juce::Rectangle<int> LeftResponseCurveComponent::getAnalysisArea() {
     auto bounds = getRenderArea();
     bounds.removeFromLeft(19);
@@ -192,6 +235,11 @@ juce::Rectangle<int> LeftResponseCurveComponent::getAnalysisArea() {
 
 //==============================================================================
 
+/**
+ * @brief Construct a new Right Response Curve Component:: Right Response Curve Component object
+ * Set timer and listener for right response graph
+ * @param p 
+ */
 RightResponseCurveComponent::RightResponseCurveComponent(EQlibriumAudioProcessor& p) :
 audioProcessor(p) {
     const auto& params = audioProcessor.getParameters();
@@ -202,6 +250,10 @@ audioProcessor(p) {
     startTimerHz(30);
 }
 
+/**
+ * @brief Destroy the Right Response Curve Component:: Right Response Curve Component object
+ * Remove right listener
+ */
 RightResponseCurveComponent::~RightResponseCurveComponent() {
     const auto& params = audioProcessor.getParameters();
     for(auto param : params) {
@@ -209,10 +261,21 @@ RightResponseCurveComponent::~RightResponseCurveComponent() {
     }
 }
 
+/**
+ * @brief Parameter changed
+ * For listener right
+ * @param parameterIndex 
+ * @param newValue 
+ */
 void RightResponseCurveComponent::parameterValueChanged(int parameterIndex, float newValue) {
     parametersChanged.set(true);
 }
 
+/**
+ * @brief Timer callback
+ * Update filter
+ * Repaint right graph
+ */
 void RightResponseCurveComponent::timerCallback() {
     auto fftBounds = getLocalBounds().toFloat();
     auto sampleRate = audioProcessor.getSampleRate();
@@ -222,6 +285,10 @@ void RightResponseCurveComponent::timerCallback() {
     repaint();
 }
 
+/**
+ * @brief Update
+ * Update right filters
+ */
 void RightResponseCurveComponent::updateChain() {
     auto chainSettings = getChainSettings(audioProcessor.apvts);
     auto rightPeakCoefficients = makeRightPeakFilter(chainSettings, audioProcessor.getSampleRate());
@@ -232,6 +299,11 @@ void RightResponseCurveComponent::updateChain() {
     updateCutFilter(monoChain.get<HighCut>(), rightHighCutCoefficients, chainSettings.rightHighCutSlope);
 }
 
+/**
+ * @brief Paint
+ * Paint right filter
+ * @param g 
+ */
 void RightResponseCurveComponent::paint(juce::Graphics& g) {
     using namespace juce;
     g.fillAll(Colour(50,50,50));
@@ -293,6 +365,10 @@ void RightResponseCurveComponent::paint(juce::Graphics& g) {
     g.strokePath(responseCurve, PathStrokeType(2.f));
 }
 
+/**
+ * @brief Resize
+ * Resize elemenets before paint
+ */
 void RightResponseCurveComponent::resized() {
     using namespace juce;
     background = Image(Image::PixelFormat::RGB, getWidth(), getHeight(), true);
@@ -364,6 +440,11 @@ void RightResponseCurveComponent::resized() {
     }
 }
 
+/**
+ * @brief Render area
+ * (Removable)
+ * @return juce::Rectangle<int> 
+ */
 juce::Rectangle<int> RightResponseCurveComponent::getRenderArea() {
     auto bounds = getLocalBounds();
     bounds.removeFromTop(0);
@@ -373,6 +454,11 @@ juce::Rectangle<int> RightResponseCurveComponent::getRenderArea() {
     return bounds;
 }
 
+/**
+ * @brief Analysis area
+ * Resize default draw space right
+ * @return juce::Rectangle<int> 
+ */
 juce::Rectangle<int> RightResponseCurveComponent::getAnalysisArea() {
     auto bounds = getRenderArea();
     bounds.removeFromLeft(19);

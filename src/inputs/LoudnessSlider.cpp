@@ -1,5 +1,21 @@
 #include "LoudnessSlider.hpp"
 
+/**
+ * @brief LookAndFeel loudness slider
+ * Draw slider line
+ * Draw slider knob
+ * Repaint knob if position changes
+ * Repaint volume text if position changes
+ * @param g 
+ * @param x 
+ * @param y 
+ * @param width 
+ * @param height 
+ * @param sliderPos 
+ * @param minSliderPos 
+ * @param maxSliderPos 
+ * @param slider 
+ */
 void LookAndFeelLinearSlider::drawLinearSlider(
     juce::Graphics & g,
     int x,
@@ -31,6 +47,14 @@ void LookAndFeelLinearSlider::drawLinearSlider(
     }
 }
 
+/**
+ * @brief Paint
+ * Draw slider
+ * Draw slider channel L oder R
+ * Draw speaker img
+ * Draw text
+ * @param g 
+ */
 void LinearSliderWithLabels::paint(juce::Graphics &g) {
     using namespace juce;
     auto range = getRange();
@@ -66,11 +90,22 @@ void LinearSliderWithLabels::paint(juce::Graphics &g) {
     g.drawFittedText(str, r.toNearestInt(), juce::Justification::left, 1);
 }
 
+/**
+ * @brief Slider bounds
+ * (Removable)
+ * @return juce::Rectangle<int> 
+ */
 juce::Rectangle<int> LinearSliderWithLabels::getSliderBounds() const {
     auto bounds = getLocalBounds();
     return bounds;
 }
 
+/**
+ * @brief Display string
+ * Add % to gain value
+ * For better usability gain*100 || 0-100% is better readable as 0.f-1.0f
+ * @return juce::String 
+ */
 juce::String LinearSliderWithLabels::getDisplayString() const {
     if(auto* choiceParam = dynamic_cast<juce::AudioParameterChoice*>(param)) {
         return choiceParam->getCurrentChoiceName();

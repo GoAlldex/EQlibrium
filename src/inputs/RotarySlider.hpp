@@ -3,6 +3,10 @@
 #include <JuceHeader.h>
 #include "../main/PluginProcessor.hpp"
 
+/**
+ * @brief LookAndFeel rotary slider
+ * 
+ */
 struct LookAndFeelRotarySlider : juce::LookAndFeel_V4 {
     void drawRotarySlider(
         juce::Graphics&,
@@ -16,6 +20,10 @@ struct LookAndFeelRotarySlider : juce::LookAndFeel_V4 {
         juce::Slider&) override;
 };
 
+/**
+ * @brief Struct rotary slider
+ * 
+ */
 struct RotarySliderWithLabels : juce::Slider {
     RotarySliderWithLabels(
         juce::RangedAudioParameter& rap,

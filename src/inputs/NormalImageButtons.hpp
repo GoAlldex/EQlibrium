@@ -4,6 +4,10 @@
 #include "../main/PluginProcessor.hpp"
 #include "../image/EQImages.hpp"
 
+/**
+ * @brief LookAndFeel image buttons
+ * 
+ */
 struct LookAndFeelNormalImageButtons : juce::LookAndFeel_V4 {
     void drawToggleButton(
     juce::Graphics &g,
@@ -12,6 +16,10 @@ struct LookAndFeelNormalImageButtons : juce::LookAndFeel_V4 {
     bool shouldDrawButtonAsDown) override;
 };
 
+/**
+ * @brief Struct image buttons
+ * 
+ */
 struct NormalImageButtons : juce::ToggleButton {
     NormalImageButtons(imageNames val) {
         imageSet = val;
