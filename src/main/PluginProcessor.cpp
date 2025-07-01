@@ -72,7 +72,9 @@ void EQlibriumAudioProcessor::getFile() {
 }
 
 void EQlibriumAudioProcessor::loop() {
-    playSource->isLooping() ? playSource->setLooping(false) : playSource->setLooping(true);
+    if(playSource) {
+        playSource->isLooping() ? playSource->setLooping(false) : playSource->setLooping(true);
+    }
 }
 
 juce::AudioThumbnail* EQlibriumAudioProcessor::getThumbnail() {

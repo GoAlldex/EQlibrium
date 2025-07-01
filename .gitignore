@@ -3,6 +3,10 @@ extern/JUCE_PLUGIN_HOST
 extern/JUCE_PLUGIN_HOST/**
 build
 build/**
+.idea
+.idea/**
+.vscode
+.vscode/**
 
 ### C++ template
 # Prerequisites

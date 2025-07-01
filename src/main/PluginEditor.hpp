@@ -12,6 +12,7 @@
 #include "../image/EQImages.hpp"
 #include "../graph/WaveForm.hpp"
 #include "../inputs/PlayButton.hpp"
+#include "../inputs/ReplayButton.hpp"
 
 //==============================================================================
 class EQlibriumAudioProcessorEditor  : public juce::AudioProcessorEditor
@@ -80,6 +81,7 @@ private:
     NormalImageButtons fileChooserButton, microphoneButton, saveButton;
     WaveForm waveGraph;
     PlayButton playButton;
+    ReplayButton replayButton;
     using APVTS = juce::AudioProcessorValueTreeState;
     using SliderAttachment = APVTS::SliderAttachment;
     SliderAttachment leftPeakFreqSliderAttachment,
@@ -104,12 +106,14 @@ private:
         fileChooserAttachment,
         microphoneAttachment,
         saveAttachment,
-        playAttachment;
+        playAttachment,
+        replayAttachment;
     LeftLevelMeterComponent levelMeterLeft;
     RightLevelMeterComponent levelMeterRight;
     std::vector<Component*> getComps();
     LookAndFeelChannelButtons lnfCh;
     LookAndFeelNormalImageButtons lnfImgBtn;
     LookAndFeelPlayButton lnfPlay;
+    LookAndFeelReplayButton lnfReplay;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQlibriumAudioProcessorEditor)
 };

@@ -28,6 +28,7 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     saveButton(imageNames::save),
     waveGraph(audioProcessor),
     playButton(imageNames::play, imageNames::pause),
+    replayButton(imageNames::replay),
     leftPeakFreqSliderAttachment(audioProcessor.apvts, "Left Peak Freq", peakFreqSliderLeft),
     leftPeakGainSliderAttachment(audioProcessor.apvts, "Left Peak Gain", peakGainSliderLeft),
     leftPeakQualitySliderAttachment(audioProcessor.apvts, "Left Peak Quality", peakQualitySliderLeft),
@@ -53,7 +54,8 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     fileChooserAttachment(audioProcessor.apvts, "File Chooser Button", fileChooserButton), 
     microphoneAttachment(audioProcessor.apvts, "Microphone Button", microphoneButton),
     saveAttachment(audioProcessor.apvts, "Save Button", saveButton),
-    playAttachment(audioProcessor.apvts, "Play Button", playButton) {
+    playAttachment(audioProcessor.apvts, "Play Button", playButton),
+    replayAttachment(audioProcessor.apvts, "Replay Button", replayButton) {
     peakFreqSliderLeft.labels.add({0.f, "20Hz"});
     peakFreqSliderLeft.labels.add({1.f, "20kHz"});
     peakGainSliderLeft.labels.add({0.f, "-24dB"});
@@ -95,6 +97,7 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     channelButtonLeft.setLookAndFeel(&lnfCh);
     channelButtonRight.setLookAndFeel(&lnfCh);
     playButton.setLookAndFeel(&lnfPlay);
+    replayButton.setLookAndFeel(&lnfReplay);
     auto safePtr = SafePointer(this);
     fileChooserButton.onClick = [safePtr]() {
         safePtr->audioProcessor.getFile();
@@ -118,6 +121,9 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
         if(auto* comp = safePtr.getComponent()) {
             auto bypassed = comp->channelButtonRight.getToggleState();
         }
+    };
+    replayButton.onClick = [safePtr]() {
+        safePtr->audioProcessor.loop();
     };
     setSize (1000, 1000);
 }
@@ -327,6 +333,9 @@ void EQlibriumAudioProcessorEditor::resized() {
     // Play Button
     auto play = juce::Rectangle(505, window_micro_rect.getHeight()/2-40, 80, 80);
     playButton.setBounds(play);
+    // Replay Button
+    auto replay = juce::Rectangle(449, window_micro_rect.getHeight()/2-25, 50, 50);
+    replayButton.setBounds(replay);
 }
 
 std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
@@ -360,6 +369,7 @@ std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
         &microphoneButton,
         &saveButton,
         &waveGraph,
-        &playButton
+        &playButton,
+        &replayButton
     };
 }

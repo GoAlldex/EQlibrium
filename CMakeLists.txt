@@ -49,7 +49,8 @@ target_sources(EQlibrium
         src/inputs/NormalImageButtons.cpp
         src/image/EQImages.cpp
         src/graph/WaveForm.cpp
-        src/inputs/PlayButton.cpp)
+        src/inputs/PlayButton.cpp
+        src/inputs/ReplayButton.cpp)
 
 target_compile_definitions(EQlibrium
         PUBLIC
