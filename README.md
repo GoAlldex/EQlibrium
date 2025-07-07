@@ -2,9 +2,8 @@
 
 ## Project Overview
 
-EQlibrium is an example EQ project designed to demonstrate the capabilities of the JUCE framework and modern C++
-practices. The project is structured to provide a clear understanding of audio synthesis, plugin development, and
-cross-platform compatibility.
+The EQlibrium application was developed for educational purposes and will no longer be supported with extensions.
+For more detailed documentation, see the docs folder in the repository.
 
 ---
 
