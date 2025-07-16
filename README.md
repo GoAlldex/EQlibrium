@@ -3,7 +3,7 @@
 ## Project Overview
 
 The EQlibrium application was developed for educational purposes and will no longer be supported with extensions.
-For more detailed documentation, see the docs folder in the repository.
+For more detailed documentation, see docs folder (german).
 
 ---
 

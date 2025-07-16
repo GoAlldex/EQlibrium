@@ -98,7 +98,7 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
         addAndMakeVisible(comp);
     }
     fileChooserButton.setLookAndFeel(&lnfImgBtn);
-    microphoneButton.setLookAndFeel(&lnfImgBtn);
+    microphoneButton.setLookAndFeel(&lnfReplay);
     saveButton.setLookAndFeel(&lnfImgBtn);
     channelButtonLeft.setLookAndFeel(&lnfCh);
     channelButtonRight.setLookAndFeel(&lnfCh);
@@ -180,13 +180,13 @@ void EQlibriumAudioProcessorEditor::paint (juce::Graphics& g) {
     g.drawRect(peakRightLabel.toFloat(), 0.3f);
     g.drawImage(EQImages(imageNames::notch).getImage(), peakR.getWidth()+43, 277, 30, 90, 0, 0, 30, 90, false);
     g.drawRect(highCutLeftLabel.toFloat(), 0.3f);
-    g.drawImage(EQImages(imageNames::highpass).getImage(), 37, 390, 30, 90, 0, 0, 30, 90, false);
+    g.drawImage(EQImages(imageNames::lowpass).getImage(), 37, 390, 30, 90, 0, 0, 30, 90, false);
     g.drawRect(highCutRightLabel.toFloat(), 0.3f);
-    g.drawImage(EQImages(imageNames::highpass).getImage(), highCutR.getWidth()+43, 390, 30, 90, 0, 0, 30, 90, false);
+    g.drawImage(EQImages(imageNames::lowpass).getImage(), highCutR.getWidth()+43, 390, 30, 90, 0, 0, 30, 90, false);
     g.drawRect(lowCutLeftLabel.toFloat(), 0.3f);
-    g.drawImage(EQImages(imageNames::lowpass).getImage(), 37, 501, 30, 90, 0, 0, 30, 90, false);
+    g.drawImage(EQImages(imageNames::highpass).getImage(), 37, 501, 30, 90, 0, 0, 30, 90, false);
     g.drawRect(lowCutRightLabel.toFloat(), 0.3f);
-    g.drawImage(EQImages(imageNames::lowpass).getImage(), lowCutR.getWidth()+43, 501, 30, 90, 0, 0, 30, 90, false);
+    g.drawImage(EQImages(imageNames::highpass).getImage(), lowCutR.getWidth()+43, 501, 30, 90, 0, 0, 30, 90, false);
     // WaveForm
     auto waveForm = juce::Rectangle(591, 12, 400, window_micro_rect.getHeight()-12);
     waveGraph.setBounds(waveForm);

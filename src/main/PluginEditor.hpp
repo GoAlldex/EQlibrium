@@ -81,10 +81,10 @@ private:
     LeftPathProducerComponent freqLeft;
     RightPathProducerComponent freqRight;
     ChannelButtons channelButtonLeft, channelButtonRight;
-    NormalImageButtons fileChooserButton, microphoneButton, saveButton;
+    NormalImageButtons fileChooserButton, saveButton;
     WaveForm waveGraph;
     PlayButton playButton;
-    ReplayButton replayButton;
+    ReplayButton replayButton, microphoneButton;
     using APVTS = juce::AudioProcessorValueTreeState;
     using SliderAttachment = APVTS::SliderAttachment;
     SliderAttachment leftPeakFreqSliderAttachment,

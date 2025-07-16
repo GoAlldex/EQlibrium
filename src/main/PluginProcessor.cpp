@@ -214,6 +214,9 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
             rmsLevelRight.setCurrentAndTargetValue(value);
         }
     }
+    if(getChainSettings(apvts).recordButton) {
+        
+    }
 }
 
 //==============================================================================
@@ -262,6 +265,7 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts) {
     settings.channelRightButton = apvts.getRawParameterValue("Right Channel Button")->load();
     settings.playButton = apvts.getRawParameterValue("Play Button")->load();
     settings.replayButton = apvts.getRawParameterValue("Replay Button")->load();
+    settings.recordButton = apvts.getRawParameterValue("Microphone Button")->load();
     return settings;
 }
 
@@ -491,6 +495,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::cre
     layout.add(std::make_unique<juce::AudioParameterBool>(
         "Replay Button",
         "Peplay Button",
+        true,
+        attributes));
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        "Microphone Button",
+        "Microphone Button",
         true,
         attributes));
     return layout;
