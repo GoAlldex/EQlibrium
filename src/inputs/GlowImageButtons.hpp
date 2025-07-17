@@ -5,10 +5,10 @@
 #include "../image/EQImages.hpp"
 
 /**
- * @brief LookAndFeel replay button
+ * @brief LookAndFeel glow image button
  * 
  */
-struct LookAndFeelReplayButton : juce::LookAndFeel_V4 {
+struct LookAndFeelGlowButton : juce::LookAndFeel_V4 {
     void drawToggleButton(
     juce::Graphics &g,
     juce::ToggleButton & toggleButton,
@@ -17,12 +17,12 @@ struct LookAndFeelReplayButton : juce::LookAndFeel_V4 {
 };
 
 /**
- * @brief Struct replay button
+ * @brief Struct glow image button
  * 
  */
-struct ReplayButton : juce::ToggleButton {
-    ReplayButton(imageNames replay) {
-        image = replay;
+struct GlowImageButtons : juce::ToggleButton {
+    GlowImageButtons(imageNames img) {
+        image = img;
     };
     void paint(juce::Graphics& g) override;
     imageNames image;

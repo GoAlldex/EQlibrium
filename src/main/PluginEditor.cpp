@@ -98,12 +98,12 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
         addAndMakeVisible(comp);
     }
     fileChooserButton.setLookAndFeel(&lnfImgBtn);
-    microphoneButton.setLookAndFeel(&lnfReplay);
+    microphoneButton.setLookAndFeel(&lnfGlow);
     saveButton.setLookAndFeel(&lnfImgBtn);
     channelButtonLeft.setLookAndFeel(&lnfCh);
     channelButtonRight.setLookAndFeel(&lnfCh);
     playButton.setLookAndFeel(&lnfPlay);
-    replayButton.setLookAndFeel(&lnfReplay);
+    replayButton.setLookAndFeel(&lnfGlow);
     auto safePtr = SafePointer(this);
     fileChooserButton.onClick = [safePtr]() {
         safePtr->audioProcessor.getFile();

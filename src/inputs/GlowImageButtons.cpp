@@ -1,8 +1,8 @@
-#include "ReplayButton.hpp"
+#include "GlowImageButtons.hpp"
 
 /**
- * @brief LookAndFeel replay button
- * Draw replay image
+ * @brief LookAndFeel glow image button
+ * Draw glow image
  * Toggle state false = white replay image
  * Toggle state true = green replay image
  * @param g 
@@ -10,13 +10,13 @@
  * @param shouldDrawButtonAsHighlighted 
  * @param shouldDrawButtonAsDown 
  */
-void LookAndFeelReplayButton::drawToggleButton(
+void LookAndFeelGlowButton::drawToggleButton(
     juce::Graphics &g,
     juce::ToggleButton & toggleButton,
     bool shouldDrawButtonAsHighlighted,
     bool shouldDrawButtonAsDown) {
     using namespace juce;
-    if(auto* pb = dynamic_cast<ReplayButton*>(&toggleButton) ) {
+    if(auto* pb = dynamic_cast<GlowImageButtons*>(&toggleButton) ) {
         auto bounds = pb->getLocalBounds();
         Colour imgColour = toggleButton.getToggleState() ? Colour(0,255,128) : Colour(255,255,255);
         Image img = EQImages(pb->image).getImage();
@@ -27,10 +27,10 @@ void LookAndFeelReplayButton::drawToggleButton(
 
 /**
  * @brief Paint
- * Draw replay button
+ * Draw glow image button
  * @param g 
  */
-void ReplayButton::paint(juce::Graphics &g) {
+void GlowImageButtons::paint(juce::Graphics &g) {
     using namespace juce;
     getLookAndFeel().drawToggleButton(
         g,

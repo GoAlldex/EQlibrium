@@ -12,7 +12,7 @@
 #include "../image/EQImages.hpp"
 #include "../graph/WaveForm.hpp"
 #include "../inputs/PlayButton.hpp"
-#include "../inputs/ReplayButton.hpp"
+#include "../inputs/GlowImageButtons.hpp"
 
 //==============================================================================
 
@@ -84,7 +84,7 @@ private:
     NormalImageButtons fileChooserButton, saveButton;
     WaveForm waveGraph;
     PlayButton playButton;
-    ReplayButton replayButton, microphoneButton;
+    GlowImageButtons replayButton, microphoneButton;
     using APVTS = juce::AudioProcessorValueTreeState;
     using SliderAttachment = APVTS::SliderAttachment;
     SliderAttachment leftPeakFreqSliderAttachment,
@@ -117,6 +117,6 @@ private:
     LookAndFeelChannelButtons lnfCh;
     LookAndFeelNormalImageButtons lnfImgBtn;
     LookAndFeelPlayButton lnfPlay;
-    LookAndFeelReplayButton lnfReplay;
+    LookAndFeelGlowButton lnfGlow;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQlibriumAudioProcessorEditor)
 };
