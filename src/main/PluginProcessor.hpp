@@ -260,6 +260,8 @@ public:
     juce::AudioThumbnailCache thumbnailCache;
     juce::AudioThumbnail thumbnail;
     juce::AudioThumbnail* getThumbnail();
+    void recordVoice(juce::AudioBuffer<float>& buffer);
+    bool writeFile = false;
 private:
     MonoChain leftChain, rightChain;
     void updatePeakFilter(const ChainSettings& chainSettings);

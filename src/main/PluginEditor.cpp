@@ -342,7 +342,7 @@ void EQlibriumAudioProcessorEditor::resized() {
     auto fileChooser = juce::Rectangle(166, 50, 30, 30);
     fileChooserButton.setBounds(fileChooser);
     auto save = juce::Rectangle(202, 50, 30, 30);
-    saveButton.setBounds(save);
+    //saveButton.setBounds(save);
     auto microphone = juce::Rectangle(166, 86, 30, 30);
     microphoneButton.setBounds(microphone);
     // Play Button

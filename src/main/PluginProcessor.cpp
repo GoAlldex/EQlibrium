@@ -108,7 +108,6 @@ juce::AudioThumbnail* EQlibriumAudioProcessor::getThumbnail() {
  */
 void EQlibriumAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    //apvts.processor.setBusesLayout(BusesLayout().);
     previousChainSettings = getChainSettings(apvts);
     juce::dsp::ProcessSpec spec {
         spec.sampleRate = sampleRate,
@@ -164,7 +163,34 @@ void EQlibriumAudioProcessor::smoothLoudness(juce::AudioBuffer<float>& buffer) {
     } else {
         buffer.applyGainRamp(1, 0, buffer.getNumSamples(), previousChainSettings.gainRight, getChainSettings(apvts).gainRight);
     }
-    previousChainSettings = getChainSettings(apvts);
+}
+
+/**
+ * @brief Record voice
+ * Record buffer data to file (or stop record)
+ * @param buffer 
+ */
+void EQlibriumAudioProcessor::recordVoice(juce::AudioBuffer<float>& buffer) {
+    if(getChainSettings(apvts).recordButton) {
+        writeFile = true;
+        juce::File file = juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentExecutableFile).getSiblingFile("record").getFullPathName()+"/record.wav";
+        if(!file.exists()) {
+            file.create();
+        }
+        juce::WavAudioFormat format;
+        std::unique_ptr<juce::AudioFormatWriter> writer;
+        writer.reset(format.createWriterFor(new juce::FileOutputStream(file), getSampleRate(), getTotalNumOutputChannels(), 24, {}, 0));
+        if(writer != nullptr) {
+            writer->writeFromAudioSampleBuffer(buffer, 0, buffer.getNumSamples());
+        }
+    } else if(writeFile) {
+        writeFile = false;
+        juce::File file = juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentExecutableFile).getSiblingFile("record").getFullPathName()+"/record.wav";
+        juce::WavAudioFormat format;
+        std::unique_ptr<juce::AudioFormatWriter> writer;
+        writer.reset(format.createWriterFor(new juce::FileOutputStream(file), getSampleRate(), getTotalNumOutputChannels(), 24, {}, 0));
+        writer->flush();
+    }
 }
 
 /**
@@ -172,6 +198,7 @@ void EQlibriumAudioProcessor::smoothLoudness(juce::AudioBuffer<float>& buffer) {
  * Play audio data (when play == true and audio data exists)
  * Set filters lowcut, highcut, notch
  * Set values for VU-level display
+ * Set voice record after button activation
  * @param buffer 
  * @param midiMessages 
  */
@@ -186,6 +213,7 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     if(playSource && getChainSettings(apvts).playButton) {
         juce::AudioSourceChannelInfo info(buffer);
         playSource->getNextAudioBlock(info);
+        recordVoice(buffer);
     }
     smoothLoudness(buffer);
     auto leftBlock = block.getSingleChannelBlock(0);
@@ -214,9 +242,8 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
             rmsLevelRight.setCurrentAndTargetValue(value);
         }
     }
-    if(getChainSettings(apvts).recordButton) {
-        
-    }
+    //recordVoice(buffer);
+    previousChainSettings = getChainSettings(apvts);
 }
 
 //==============================================================================
