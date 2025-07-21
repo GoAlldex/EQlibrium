@@ -215,8 +215,9 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         playSource->getNextAudioBlock(info);
         recordVoice(buffer);
     }
+    auto leftBlock = getChainSettings(apvts).channelLeftButton ? block.getSingleChannelBlock(0) : block.getSingleChannelBlock(0).clear();
+    auto rightBlock = getChainSettings(apvts).channelRightButton ? block.getSingleChannelBlock(1) : block.getSingleChannelBlock(1).clear();
     smoothLoudness(buffer);
-    auto leftBlock = block.getSingleChannelBlock(0);
     juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
     leftChain.process(leftContext);
     leftChannelFifo.update(buffer);
@@ -229,7 +230,6 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
             rmsLevelLeft.setCurrentAndTargetValue(value);
         }
     }
-    auto rightBlock = block.getSingleChannelBlock(1);
     juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
     rightChain.process(rightContext);
     rightChannelFifo.update(buffer);
