@@ -82,12 +82,16 @@ target_link_libraries(EQlibrium
 set(DEBUG_PATH_STANDALONE "${CMAKE_CURRENT_BINARY_DIR}/EQlibrium_artefacts/Debug/Standalone")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/images
         DESTINATION ${DEBUG_PATH_STANDALONE}/)
+make_directory(${DEBUG_PATH_STANDALONE}/records)
 set(DEBUG_PATH_VST3 "${CMAKE_CURRENT_BINARY_DIR}/EQlibrium_artefacts/Debug/VST3")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/images
         DESTINATION ${DEBUG_PATH_VST3}/)
+make_directory(${DEBUG_PATH_VST3}/records)
 set(RELEASE_PATH_STANDALONE "${CMAKE_CURRENT_BINARY_DIR}/EQlibrium_artefacts/Release/Standalone")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/images
         DESTINATION ${RELEASE_PATH_STANDALONE}/)
+make_directory(${RELEASE_PATH_STANDALONE}/records)
 set(RELEASE_PATH_VST3 "${CMAKE_CURRENT_BINARY_DIR}/EQlibrium_artefacts/Release/VST3")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/images
         DESTINATION ${RELEASE_PATH_VST3}/)
+make_directory(${RELEASE_PATH_VST3}/records)

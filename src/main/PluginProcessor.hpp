@@ -262,6 +262,10 @@ public:
     juce::AudioThumbnail* getThumbnail();
     void recordVoice(juce::AudioBuffer<float>& buffer);
     bool writeFile = false;
+    //std::unique_ptr<juce::AudioFormatWriter> writer;
+    juce::AudioFormatWriter* writer;
+    juce::WavAudioFormat writerformat;
+    juce::File file = juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentExecutableFile).getSiblingFile("records").getFullPathName()+"/record.wav";
 private:
     MonoChain leftChain, rightChain;
     void updatePeakFilter(const ChainSettings& chainSettings);

@@ -173,23 +173,17 @@ void EQlibriumAudioProcessor::smoothLoudness(juce::AudioBuffer<float>& buffer) {
 void EQlibriumAudioProcessor::recordVoice(juce::AudioBuffer<float>& buffer) {
     if(getChainSettings(apvts).recordButton) {
         writeFile = true;
-        juce::File file = juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentExecutableFile).getSiblingFile("record").getFullPathName()+"/record.wav";
         if(!file.exists()) {
             file.create();
+            writer = writerformat.createWriterFor(new juce::FileOutputStream(file), getSampleRate(), getTotalNumOutputChannels(), 24, {}, 0);
         }
-        juce::WavAudioFormat format;
-        std::unique_ptr<juce::AudioFormatWriter> writer;
-        writer.reset(format.createWriterFor(new juce::FileOutputStream(file), getSampleRate(), getTotalNumOutputChannels(), 24, {}, 0));
         if(writer != nullptr) {
             writer->writeFromAudioSampleBuffer(buffer, 0, buffer.getNumSamples());
         }
     } else if(writeFile) {
         writeFile = false;
-        juce::File file = juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentExecutableFile).getSiblingFile("record").getFullPathName()+"/record.wav";
-        juce::WavAudioFormat format;
-        std::unique_ptr<juce::AudioFormatWriter> writer;
-        writer.reset(format.createWriterFor(new juce::FileOutputStream(file), getSampleRate(), getTotalNumOutputChannels(), 24, {}, 0));
         writer->flush();
+        //writer.reset(writerformat.createWriterFor(new juce::FileOutputStream(file), getSampleRate(), getTotalNumOutputChannels(), 24, {}, 0));
     }
 }
 
@@ -242,7 +236,7 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
             rmsLevelRight.setCurrentAndTargetValue(value);
         }
     }
-    //recordVoice(buffer);
+    recordVoice(buffer);
     previousChainSettings = getChainSettings(apvts);
 }
 

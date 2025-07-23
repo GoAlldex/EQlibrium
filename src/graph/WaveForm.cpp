@@ -65,7 +65,6 @@ void WaveForm::paint(juce::Graphics& g) {
  */
 void WaveForm::resized() {
     using namespace juce;
-
 }
 
 /**
