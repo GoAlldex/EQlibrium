@@ -109,8 +109,7 @@ private:
         saveAttachment,
         playAttachment,
         replayAttachment;
-    LeftLevelMeterComponent levelMeterLeft;
-    RightLevelMeterComponent levelMeterRight;
+    LevelMeterComponent levelMeterLeft, levelMeterRight;
     std::vector<Component*> getComps();
     LookAndFeelChannelButtons lnfCh;
     LookAndFeelNormalImageButtons lnfImgBtn;
