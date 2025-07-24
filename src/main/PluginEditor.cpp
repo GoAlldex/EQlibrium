@@ -110,7 +110,7 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     };
     microphoneButton.onClick = [safePtr]() {
         if(auto* comp = safePtr.getComponent()) {
-            auto bypassed = comp->microphoneButton.getToggleState();
+            safePtr->audioProcessor.prepareRecord();
         }
     };
     saveButton.onClick = [safePtr]() {
@@ -126,6 +126,11 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     channelButtonRight.onClick = [safePtr]() {
         if(auto* comp = safePtr.getComponent()) {
             auto bypassed = comp->channelButtonRight.getToggleState();
+        }
+    };
+    playButton.onClick = [safePtr]() {
+        if(auto* comp = safePtr.getComponent()) {
+            auto bypassed = comp->playButton.getToggleState();
         }
     };
     replayButton.onClick = [safePtr]() {

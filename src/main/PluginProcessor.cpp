@@ -1,5 +1,6 @@
 #include "PluginProcessor.hpp"
 #include "PluginEditor.hpp"
+#include <ctime>
 
 //==============================================================================
 EQlibriumAudioProcessor::EQlibriumAudioProcessor()
@@ -69,7 +70,7 @@ void EQlibriumAudioProcessor::getFile() {
     if(chooser.browseForFileToOpen()) {
         auto file = chooser.getResult();
         juce::AudioFormatReader* reader = formatManager.createReaderFor(file);
-        if (reader != nullptr) {
+        if(reader != nullptr) {
             thumbnail.setSource(new juce::FileInputSource(file));
             playSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
             if(getChainSettings(apvts).replayButton) {
@@ -166,24 +167,40 @@ void EQlibriumAudioProcessor::smoothLoudness(juce::AudioBuffer<float>& buffer) {
 }
 
 /**
+ * @brief Prepare record
+ * init, file create with timestamp
+ */
+void EQlibriumAudioProcessor::prepareRecord() {
+    if(getChainSettings(apvts).recordButton) {
+        time_t timestamp = time(&timestamp);
+        struct tm datetime = *localtime(&timestamp);
+        std::string date = std::to_string(datetime.tm_year)+"_"+std::to_string(datetime.tm_mon)+"_"+std::to_string(datetime.tm_mday)+"_"
+        +std::to_string(datetime.tm_hour)+"-"+std::to_string(datetime.tm_min)+"-"+std::to_string(datetime.tm_sec);
+        std::cout << date;
+        file = juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentExecutableFile).getSiblingFile("records").getFullPathName()+"/record_"+date+".wav";
+        file.create();
+        juce::StringPairArray metaData = juce::WavAudioFormat::createBWAVMetadata("", "", "", juce::Time::getCurrentTime(), 0, "");
+        writer.reset(writerformat.createWriterFor(new juce::FileOutputStream(file), getSampleRate(), getTotalNumOutputChannels(), 24, metaData, 0));
+    }
+}
+
+/**
  * @brief Record voice
  * Record buffer data to file (or stop record)
  * @param buffer 
  */
 void EQlibriumAudioProcessor::recordVoice(juce::AudioBuffer<float>& buffer) {
     if(getChainSettings(apvts).recordButton) {
-        writeFile = true;
-        if(!file.exists()) {
-            file.create();
-            writer = writerformat.createWriterFor(new juce::FileOutputStream(file), getSampleRate(), getTotalNumOutputChannels(), 24, {}, 0);
-        }
-        if(writer != nullptr) {
-            writer->writeFromAudioSampleBuffer(buffer, 0, buffer.getNumSamples());
+        if(file.exists()) {
+            writeFile = true;
+            if(writer != nullptr) {
+                writer->writeFromAudioSampleBuffer(buffer, 0, buffer.getNumSamples());
+            }
         }
     } else if(writeFile) {
         writeFile = false;
         writer->flush();
-        //writer.reset(writerformat.createWriterFor(new juce::FileOutputStream(file), getSampleRate(), getTotalNumOutputChannels(), 24, {}, 0));
+        writer = nullptr;
     }
 }
 
@@ -207,7 +224,6 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     if(playSource && getChainSettings(apvts).playButton) {
         juce::AudioSourceChannelInfo info(buffer);
         playSource->getNextAudioBlock(info);
-        recordVoice(buffer);
     }
     auto leftBlock = getChainSettings(apvts).channelLeftButton ? block.getSingleChannelBlock(0) : block.getSingleChannelBlock(0).clear();
     auto rightBlock = getChainSettings(apvts).channelRightButton ? block.getSingleChannelBlock(1) : block.getSingleChannelBlock(1).clear();
