@@ -121,14 +121,14 @@ private:
 };
 
 /**
- * @brief Struct left path
+ * @brief Struct path
  * 
  */
-struct LeftPathProducerComponent : juce::Component,
+struct PathProducerComponent : juce::Component,
 juce::AudioProcessorParameter::Listener,
 juce::Timer {
-    LeftPathProducerComponent(EQlibriumAudioProcessor&);
-    ~LeftPathProducerComponent();
+    PathProducerComponent(EQlibriumAudioProcessor&, int);
+    ~PathProducerComponent();
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override { }
     void timerCallback() override;
@@ -136,31 +136,7 @@ juce::Timer {
     void resized() override;
 private:
     EQlibriumAudioProcessor& audioProcessor;
-    juce::Atomic<bool> parametersChanged { false };
-    MonoChain monoChain;
-    void updateChain();
-    juce::Image background;
-    juce::Rectangle<int> getRenderArea();
-    juce::Rectangle<int> getAnalysisArea();
-    PathProducer pathProducer;
-};
-
-/**
- * @brief struct right path
- * 
- */
-struct RightPathProducerComponent: juce::Component,
-juce::AudioProcessorParameter::Listener,
-juce::Timer {
-    RightPathProducerComponent(EQlibriumAudioProcessor&);
-    ~RightPathProducerComponent();
-    void parameterValueChanged(int parameterIndex, float newValue) override;
-    void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override { }
-    void timerCallback() override;
-    void paint(juce::Graphics& g) override;
-    void resized() override;
-private:
-    EQlibriumAudioProcessor& audioProcessor;
+    int channel;
     juce::Atomic<bool> parametersChanged { false };
     MonoChain monoChain;
     void updateChain();

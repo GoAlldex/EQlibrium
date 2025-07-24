@@ -77,8 +77,7 @@ private:
         highCutSlopeSliderRight;
     LinearSliderWithLabels gainSliderLeft, gainSliderRight;
     ResponseCurveComponent filterLeft, filterRight;
-    LeftPathProducerComponent freqLeft;
-    RightPathProducerComponent freqRight;
+    PathProducerComponent freqLeft, freqRight;
     ChannelButtons channelButtonLeft, channelButtonRight;
     NormalImageButtons fileChooserButton, saveButton;
     WaveForm waveGraph;
