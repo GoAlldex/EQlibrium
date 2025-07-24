@@ -52,7 +52,7 @@ void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate) 
  */
 LeftPathProducerComponent::LeftPathProducerComponent(EQlibriumAudioProcessor& p) :
 audioProcessor(p),
-pathProducer(audioProcessor.rightChannelFifo) {
+pathProducer(audioProcessor.leftChannelFifo) {
     const auto& params = audioProcessor.getParameters();
     for(auto param : params) {
         param->addListener(this);
@@ -241,7 +241,7 @@ juce::Rectangle<int> LeftPathProducerComponent::getAnalysisArea() {
  */
 RightPathProducerComponent::RightPathProducerComponent(EQlibriumAudioProcessor& p) :
 audioProcessor(p),
-pathProducer(audioProcessor.leftChannelFifo) {
+pathProducer(audioProcessor.rightChannelFifo) {
     const auto& params = audioProcessor.getParameters();
     for(auto param : params) {
         param->addListener(this);

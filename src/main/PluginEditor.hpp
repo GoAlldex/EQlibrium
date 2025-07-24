@@ -76,8 +76,7 @@ private:
         lowCutSlopeSliderRight,
         highCutSlopeSliderRight;
     LinearSliderWithLabels gainSliderLeft, gainSliderRight;
-    LeftResponseCurveComponent filterLeft;
-    RightResponseCurveComponent filterRight;
+    ResponseCurveComponent filterLeft, filterRight;
     LeftPathProducerComponent freqLeft;
     RightPathProducerComponent freqRight;
     ChannelButtons channelButtonLeft, channelButtonRight;

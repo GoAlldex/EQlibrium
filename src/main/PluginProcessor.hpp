@@ -65,10 +65,10 @@ struct SingleChannelSampleFifo {
         prepared.set(false);
     }
 
-    void update(const BlockType& buffer) {
+    void update(const BlockType& buffer, const int channel) {
         jassert(prepared.get());
         jassert(buffer.getNumChannels() > channelToUse);
-        auto* channelPtr = buffer.getReadPointer(channelToUse);
+        auto* channelPtr = buffer.getReadPointer(channel);
         for(int i = 0; i < buffer.getNumSamples(); ++i) {
             pushNextSampleIntoFifo(channelPtr[i]);
         }
@@ -248,8 +248,8 @@ public:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameter", createParameterLayout()};
     using BlockType = juce::AudioBuffer<float>;
-    SingleChannelSampleFifo<BlockType> leftChannelFifo { Left };
-    SingleChannelSampleFifo<BlockType> rightChannelFifo { Right };
+    SingleChannelSampleFifo<BlockType> leftChannelFifo { Channel::Left };
+    SingleChannelSampleFifo<BlockType> rightChannelFifo { Channel::Right };
     juce::AudioFormatManager formatManager;
     std::unique_ptr<juce::AudioFormatReaderSource> playSource;
     void getFile();

@@ -230,7 +230,7 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     smoothLoudness(buffer);
     juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
     leftChain.process(leftContext);
-    leftChannelFifo.update(buffer);
+    leftChannelFifo.update(buffer, 0);
     rmsLevelLeft.skip(buffer.getNumSamples());
     {
         const auto value = juce::Decibels::gainToDecibels(buffer.getRMSLevel(0, 0, buffer.getNumSamples()));
@@ -242,7 +242,7 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     }
     juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
     rightChain.process(rightContext);
-    rightChannelFifo.update(buffer);
+    rightChannelFifo.update(buffer, 1);
     rmsLevelRight.skip(buffer.getNumSamples());
     {
         const auto value = juce::Decibels::gainToDecibels(buffer.getRMSLevel(1, 0, buffer.getNumSamples()));
