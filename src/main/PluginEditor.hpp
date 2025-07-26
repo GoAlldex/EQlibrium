@@ -27,6 +27,8 @@ public:
     ~EQlibriumAudioProcessorEditor() override;
     void paint(juce::Graphics&) override;
     void resized() override;
+private:
+    EQlibriumAudioProcessor& audioProcessor;
     juce::Rectangle<int> window_full_rect;
     juce::Rectangle<int> window_micro_rect;
     juce::Rectangle<int> window_settings_rect;
@@ -59,8 +61,6 @@ public:
     juce::Rectangle<int> lowCutL;
     juce::Rectangle<int> lowCutRightLabel;
     juce::Rectangle<int> lowCutR;
-private:
-    EQlibriumAudioProcessor& audioProcessor;
     RotarySliderWithLabels peakFreqSliderLeft,
         peakGainSliderLeft,
         peakQualitySliderLeft,
