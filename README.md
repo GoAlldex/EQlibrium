@@ -22,7 +22,7 @@ The EQlibrium application was developed for educational purposes and will no lon
 
 ## Build System
 
-This project uses CMake as the primary build system. To build the project:
+This project uses CMake as the primary build system. Make sure you execute cmake in admin mode (otherwise VST3 may not compile). To build the project:
 
 1. Clone the repository.
 2. Navigate to the project root directory:
@@ -41,12 +41,11 @@ This project uses CMake as the primary build system. To build the project:
    ```bash
    cmake --build . --config Release --target EQlibrium_Standalone -j [CPU thread count]
    ```
-or
+   or
    ```bash
    cmake --build . --config Release --target EQlibrium_VST3 -j [CPU thread count]
    ```
 
-Make sure you execute cmake in admin mode (otherwise VST3 may not compile).
 ---
 
 ## Dependencies
