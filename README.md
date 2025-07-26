@@ -3,7 +3,20 @@
 ## Project Overview
 
 The EQlibrium application was developed for educational purposes and will no longer be supported with extensions.
-For more detailed documentation, see docs folder (german).
+
+# Key Features
+1. Equlizer visual for each audio channel L/R(filter graph, frequency graph, VU-Meter)
+2. Equlizer notch, lowpass and highpass (lowpass + highpass = bandpass)
+3. Adjustable gain for each channel L/R
+4. Audio recording (with filter and background audio)
+5. Audio player with repeat for .wav and .mp3 files and L/R channel waveform graph
+6. Disable function for L/R channel
+
+---
+
+## Requierments
+1. JUCE Framework (clone JUCE framework to extern/JUCE/)
+2. CMake 3.3 or greater
 
 ---
 
@@ -26,9 +39,14 @@ This project uses CMake as the primary build system. To build the project:
    ```
 5. Build the project:
    ```bash
-   cmake --build .
+   cmake --build . --config Release --target EQlibrium_Standalone -j [CPU thread count]
+   ```
+or
+   ```bash
+   cmake --build . --config Release --target EQlibrium_VST3 -j [CPU thread count]
    ```
 
+Make sure you execute cmake in admin mode (otherwise VST3 may not compile).
 ---
 
 ## Dependencies
@@ -36,8 +54,6 @@ This project uses CMake as the primary build system. To build the project:
 EQlibrium relies on the following key dependencies:
 
 1. **JUCE Framework**: For audio processing and UI management.
-2. **magig_enum**: A modern C++ library for enum handling.
-3. Additional dependencies for cross-platform support.
 
 Dependencies are managed using `CMake` for seamless integration. Ensure all dependencies are installed or accessible
 during the configuration process.

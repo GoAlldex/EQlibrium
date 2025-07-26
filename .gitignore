@@ -8,7 +8,7 @@ build/**
 .vscode
 .vscode/**
 *.docx
-docs/*.png
+Documentation/*.png
 
 ### C++ template
 # Prerequisites

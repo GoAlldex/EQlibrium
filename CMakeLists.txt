@@ -5,14 +5,6 @@ project(EQlibrium VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-include(FetchContent)
-FetchContent_Declare(
-        magic_enum
-        GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
-        GIT_TAG v0.9.7
-)
-FetchContent_MakeAvailable(magic_enum)
-
 add_subdirectory(extern/JUCE)
 
 juce_add_plugin(EQlibrium
@@ -21,7 +13,7 @@ juce_add_plugin(EQlibrium
         ICON_SMALL "images/logo2.png"
         COMPANY_NAME "Boostmeup GmbH"
         IS_SYNTH FALSE
-        #MICROPHONE_PERMISSION_ENABLED TRUE
+        MICROPHONE_PERMISSION_ENABLED TRUE
         #BACKGROUND_AUDIO_ENABLED TRUE
         NEEDS_MIDI_INPUT FALSE
         NEEDS_MIDI_OUTPUT FALSE
@@ -76,7 +68,6 @@ target_link_libraries(EQlibrium
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
-        magic_enum::magic_enum
 )
 
 set(DEBUG_PATH_STANDALONE "${CMAKE_CURRENT_BINARY_DIR}/EQlibrium_artefacts/Debug/Standalone")
