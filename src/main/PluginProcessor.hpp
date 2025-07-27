@@ -137,6 +137,12 @@ enum Slope {
     Slope_48
 };
 
+enum Mixer {
+    Both,
+    Extern,
+    Intern
+};
+
 /** @brief ChainSettings
  * Holds each adjustable paramater (buttons, slope, radiobutton...)
  */
@@ -148,6 +154,7 @@ struct ChainSettings {
     bool playButton = false;
     bool replayButton = false;
     bool recordButton = false;
+    Mixer mixer {Both};
     float leftPeakFreq {0}, leftPeakGainInDecibels{0}, leftPeakQuality{1.f}, rightPeakFreq {0}, rightPeakGainInDecibels{0}, rightPeakQuality{1.f};
     float leftLowCutFreq {0}, leftHighCutFreq {0}, rightLowCutFreq {0}, rightHighCutFreq {0};
     Slope leftLowCutSlope {Slope_12}, leftHighCutSlope {Slope_12}, rightLowCutSlope {Slope_12}, rightHighCutSlope {Slope_12};

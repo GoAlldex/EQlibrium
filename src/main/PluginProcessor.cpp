@@ -216,10 +216,11 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
+    juce::AudioBuffer<float> recordBuffer;
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
     updateFilters();
-    if(playSource && getChainSettings(apvts).playButton) {
+    if(playSource && getChainSettings(apvts).playButton && getChainSettings(apvts).mixer == Mixer::Both) {
         juce::AudioBuffer<float> audioBuffer;
         audioBuffer.makeCopyOf(buffer, false);
         juce::AudioSourceChannelInfo info(audioBuffer);
@@ -227,6 +228,11 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         for(int i = 0; i < totalNumInputChannels; ++i){
             buffer.addFrom(i, 0, audioBuffer, i, 0, audioBuffer.getNumSamples());
         }
+    } else if(playSource && getChainSettings(apvts).playButton && getChainSettings(apvts).mixer == Mixer::Intern) {
+        recordBuffer.makeCopyOf(buffer);
+        buffer.clear();
+        juce::AudioSourceChannelInfo info(buffer);
+        playSource->getNextAudioBlock(info);
     }
     juce::dsp::AudioBlock<float> block(buffer);
     auto leftBlock = getChainSettings(apvts).channelLeftButton ? block.getSingleChannelBlock(0) : block.getSingleChannelBlock(0).clear();
@@ -256,7 +262,12 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
             rmsLevelRight.setCurrentAndTargetValue(value);
         }
     }
-    /*if(playSource && getChainSettings(apvts).playButton) {
+    if(getChainSettings(apvts).mixer == Mixer::Intern) {
+        for(int i = 0; i < totalNumInputChannels; ++i){
+            buffer.addFrom(i, 0, recordBuffer, i, 0, recordBuffer.getNumSamples());
+        }
+    }
+    if(playSource && getChainSettings(apvts).playButton && getChainSettings(apvts).mixer == Mixer::Extern) {
         juce::AudioBuffer<float> audioBuffer;
         audioBuffer.makeCopyOf(buffer, false);
         juce::AudioSourceChannelInfo info(audioBuffer);
@@ -264,7 +275,7 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         for(int i = 0; i < totalNumInputChannels; ++i){
             buffer.addFrom(i, 0, audioBuffer, i, 0, audioBuffer.getNumSamples());
         }
-    }*/
+    }
     recordVoice(buffer);
     previousChainSettings = getChainSettings(apvts);
 }
@@ -316,6 +327,7 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts) {
     settings.playButton = apvts.getRawParameterValue("Play Button")->load();
     settings.replayButton = apvts.getRawParameterValue("Replay Button")->load();
     settings.recordButton = apvts.getRawParameterValue("Microphone Button")->load();
+    settings.mixer = static_cast<Mixer>(apvts.getRawParameterValue("Equalizer Input")->load());
     return settings;
 }
 
@@ -552,6 +564,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout EQlibriumAudioProcessor::cre
         "Microphone Button",
         true,
         attributes));
+    juce::StringArray mix;
+    mix.add("Both");
+    mix.add("Extern");
+    mix.add("Intern");
+    layout.add(std::make_unique<juce::AudioParameterChoice>("Equalizer Input", "Equalizer Input", mix, 0));
     return layout;
 }
 

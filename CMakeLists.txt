@@ -42,7 +42,8 @@ target_sources(EQlibrium
         src/image/EQImages.cpp
         src/graph/WaveForm.cpp
         src/inputs/PlayButton.cpp
-        src/inputs/GlowImageButtons.cpp)
+        src/inputs/GlowImageButtons.cpp
+        src/inputs/TextButtons.cpp)
 
 target_compile_definitions(EQlibrium
         PUBLIC

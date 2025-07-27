@@ -13,6 +13,7 @@
 #include "../graph/WaveForm.hpp"
 #include "../inputs/PlayButton.hpp"
 #include "../inputs/GlowImageButtons.hpp"
+#include "../inputs/TextButtons.hpp"
 
 //==============================================================================
 
@@ -83,6 +84,7 @@ private:
     WaveForm waveGraph;
     PlayButton playButton;
     GlowImageButtons replayButton, microphoneButton;
+    juce::ComboBox equalizerInputButton;
     using APVTS = juce::AudioProcessorValueTreeState;
     using SliderAttachment = APVTS::SliderAttachment;
     SliderAttachment leftPeakFreqSliderAttachment,
@@ -109,6 +111,8 @@ private:
         saveAttachment,
         playAttachment,
         replayAttachment;
+    using ComboBoxAttachment = APVTS::ComboBoxAttachment;
+    ComboBoxAttachment equalizerInputAttachment;
     LevelMeterComponent levelMeterLeft, levelMeterRight;
     std::vector<Component*> getComps();
     LookAndFeelChannelButtons lnfCh;

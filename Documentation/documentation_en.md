@@ -423,12 +423,16 @@ The notch filter is essentially generated entirely by Juice; only the desired ch
 The GUI consists of three parts. In the first part (top box) you can click on the folder icon to select a .wav or .mp3 file. You can record audio by clicking on the microphone icon. When recording is active, the microphone icon has a green background. Clicking it again stops the recording. During recording, not only audio from the microphone is recorded, but also any changes made by the equalizer and, if selected, background music. On the right-hand side, a selected audio file can be played repeatedly (circle with two arrows). If the icon has a green background, the audio file can be repeated. The last "active" function is playing and pauseing the audio file. To the right of this, the waveform of the audio file is displayed, with a graph for the left and right audio channel.
 
 ### Volume and trun off channels
-In the second section, the volume for the left and right channels can be individually adjusted. The L and R buttons completely mute the respective channels, including recording. The green border around the button indicates that the channel is actively receiving/can receive audio. When off, the border is gray.
+In the second section, the volume for the left and right channels can be individually adjusted. The L and R buttons completely mute the respective channels, including recording. The green border around the button indicates that the channel is actively receiving/can receive audio. When off, the border is gray. You can also change which input signal the equalizer affects:
+
+- "Both": The equalizer modifies the entire audio signal (microphone, playing audio file, external audio)
+- "External": The equalizer only modifies audio signals from external sources (microphone, external audio)
+- "Internal": The equalizer only modifies audio signals from the playing audio file (microphone and external sources remain unchanged)
 
 ### Equalizer
 The third and largest section is the equalizer. The equalizer can be adjusted individually for each channel (stereo). The left side contains the equalizer for the left channel, and the right side contains the equalizer for the right channel. The notch filter can be used to specifically boost or cut frequencies. The first knob sets the frequency, the second the "width": the higher the value, the less nearby frequencies are boosted or cut. The third knob controls the boost or cut of the frequency, from -24 dB to +24 dB. The setting is displayed graphically in the first graph below the equalizer knobs.
 
-Below the notch filter setting are the settings for the low-pass and high-pass filters. Both can also be used together as a "bandpass." The first knob in each case specifies the frequency at which filtering should begin. The high-pass filter removes low frequencies, thus reducing the volume of the signal below the specified frequency. The same applies to the low-pass filter, only in reverse. The second knob in each case indicates the degree of attenuation per octave. The "filter slope" can be set to 12, 24, 36, and 48 dB. The higher the value, the faster the volume decreases from the set frequency. Both settings are displayed in the same graph as the notch filter.
+Below the notch filter setting are the settings for the low-pass and high-pass filters. Both can also be used together as a "bandpass". The first knob in each case specifies the frequency at which filtering should begin. The high-pass filter removes low frequencies, thus reducing the volume of the signal below the specified frequency. The same applies to the low-pass filter, only in reverse. The second knob in each case indicates the degree of attenuation per octave. The "filter slope" can be set to 12, 24, 36, and 48 dB. The higher the value, the faster the volume decreases from the set frequency. Both settings are displayed in the same graph as the notch filter.
 
 The frequency graph is displayed below the filter graph. If audio is currently playing or someone is speaking into the microphone, the frequencies are displayed accordingly. The equalizer setting also directly affects the frequency graph. Finally, below the frequency graph is a VU meter that displays the level. The VU meter also reacts to level changes caused by the equalizer settings.
 
@@ -444,6 +448,7 @@ If the recording function is activated, the buffer is written to a .wav file.
 
 Turning channels on and off clears the buffer for the selected channel. This function is between  audio buffers mix and filters.
 
+If the equalizer input is set to "Both," the buffers of the microphone/external resource and the audio file are initially mixed together and then modified by the filters. With the "External" setting, only the microphone/external resource is modified by the filters, and then the audio file is mixed into the buffer. With the final setting, "Internal," only the audio file is modified by the filters, and then the microphone/external resource is mixed into the buffer.
 
 ## Special features
 - Custom VU-Meter with delay (high to low dB) L/R

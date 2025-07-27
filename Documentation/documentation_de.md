@@ -425,7 +425,11 @@ Der Kerbfilter wird im Grunde gänzlich von Juce erzeugt, einzig die gewünschte
 Die GUI besteht aus drei Teilen. Im ersten Teil (obere Box) kann durch Klick auf das Ordnersymbol eine .wav- oder .mp3-Datei ausgewählt werden. Mit Klick auf das Mikrofonsymbol kann Audio aufgenommen werden. Wenn die Aufnahme aktiv ist, ist das Mikrofonsymbol grün hinterlegt. Ein erneuter Klick stoppt die Aufnahme. Bei der Aufnahme wird nicht nur Audio vom Mikrofon aufgenommen, sondern auch die Veränderungen durch den Equalizer sowie, falls ausgewählt, auch Hintergrundmusik. Auf der rechten Seite kann eine ausgewählte Audiodatei wiederholt abgespielt werden (Kreis mit zwei Pfeilen). Wenn das Symbol grün hinterlegt ist, ist die Wiederholung der Audiodatei aktiv. Die letzte „aktive“ Funktion ist das Abspielen und Pausieren der Audiodatei. Rechts daneben wird die Waveform der Audiodatei angezeigt, je ein Graph für den linken und den rechten Audiokanal.
 
 ### Lautstärke und Kanäle abschalten
-Im zweiten Bereich können die Lautstärken für den linken und den rechten Kanal individuell angepasst werden. Die Schaltflächen L und R schalten die jeweiligen Kanäle komplett ab, auch für die Aufnahme. Die grüne Umrandung der Schaltfläche gibt an, dass der Kanal aktiv Audio erhält/erhalten kann. Im ausgeschalteten Zustand ist die Umrandung grau.
+Im zweiten Bereich können die Lautstärken für den linken und den rechten Kanal individuell angepasst werden. Die Schaltflächen L und R schalten die jeweiligen Kanäle komplett ab, auch für die Aufnahme. Die grüne Umrandung der Schaltfläche gibt an, dass der Kanal aktiv Audio erhält/erhalten kann. Im ausgeschalteten Zustand ist die Umrandung grau. Zudem gibt es die Möglichkeit, umzustellen, für welches Eingangssignal der Equalizer wirkt:
+
+- „Both“: Der Equalizer verändert das gesamte Audiosignal (Mikrofon, abgespielte Audiodatei, externes Audio)
+- „Extern“: Der Equalizer verändert nur Audiosignale von externen Ressourcen (Mikrofon, externes Audio)
+- „Intern“: Der Equalizer verändert nur Audiosignale von der abgespielten Audiodatei (Mikrofon und externe Ressourcen bleiben unverändert)
 
 ### Equalizer
 Im dritten und größten Bereich befindet sich der Equalizer. Der Equalizer kann für jeden Kanal (Stereo) einzeln eingestellt werden. Auf der linken Seite befindet sich der Equalizer für den linken Kanal und auf der rechten Seite der Equalizer für den rechten Kanal. Mit dem Kerbfilter können gezielt Frequenzen angehoben oder verringert werden. Mit dem ersten Drehregler wird die Frequenz eingestellt, mit dem zweiten die „Breite“: Je höher der Wert, desto geringer werden nahe liegende Frequenzen mit angehoben oder gesenkt. Mit dem dritten Drehregler wird die Verstärkung oder Verringerung der Frequenz geregelt, von –24 dB bis +24 dB. Die Einstellung wird im ersten Graph unterhalb der Equalizer-Drehregler graphisch dargestellt.
@@ -446,6 +450,7 @@ Anschließend, sofern die Aufnahmefunktion aktiviert ist, wird der Buffer in ein
 
 Das Ein- und Ausschalten der Kanäle leert den Buffer für den ausgewählten Kanal. Diese Funktion befindet sich zwischen dem Mischen der Audiobuffer und der Anwendung der Filter.
 
+Wenn der Equalizer-Eingang auf „Both“ gestellt ist, werden die Buffer von Mikrofon/externer Ressource und der Audiodatei am Anfang zusammen gemixt und durch die Filter verändert. Bei der Einstellung „Extern“ wird nur das Mikrofon/externe Ressource durch die Filter verändert und anschließend die Audiodatei in den Buffer gemixt. In der letzten Einstellung „Intern“ wird nur die Audiodatei durch die Filter verändert und das Mikrofon/externe Ressource anschließend in den Buffer gemixt.
 
 ## Besonderheiten
 - Eigener VU-Meter mit Verzögerung (von hoher zu niedriger Lautstärke) L/R

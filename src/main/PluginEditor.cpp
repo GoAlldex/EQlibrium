@@ -61,7 +61,9 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     microphoneAttachment(audioProcessor.apvts, "Microphone Button", microphoneButton),
     saveAttachment(audioProcessor.apvts, "Save Button", saveButton),
     playAttachment(audioProcessor.apvts, "Play Button", playButton),
-    replayAttachment(audioProcessor.apvts, "Replay Button", replayButton) {
+    replayAttachment(audioProcessor.apvts, "Replay Button", replayButton),
+    equalizerInputAttachment(audioProcessor.apvts, "Equalizer Input", equalizerInputButton) 
+    {
     peakFreqSliderLeft.labels.add({0.f, "20Hz"});
     peakFreqSliderLeft.labels.add({1.f, "20kHz"});
     peakGainSliderLeft.labels.add({0.f, "-24dB"});
@@ -94,6 +96,10 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     gainSliderRight.labels.add({0.f, "R"});
     channelButtonLeft.label = "L";
     channelButtonRight.label = "R";
+    equalizerInputButton.addItem("Both", 1);
+    equalizerInputButton.addItem("Extern", 2);
+    equalizerInputButton.addItem("Intern", 3);
+    equalizerInputButton.setSelectedId((audioProcessor.apvts.getParameter("Equalizer Input")->getValue()+1));
     for(auto* comp : getComps()) {
         addAndMakeVisible(comp);
     }
@@ -343,6 +349,9 @@ void EQlibriumAudioProcessorEditor::resized() {
     auto onoffR = onoffBox.removeFromTop(onoffBox.getHeight());
     onoffR.removeFromTop(3);
     channelButtonRight.setBounds(onoffR);
+    // Equlizer mix button
+    auto eqmix = juce::Rectangle(245, 177, 100, 25);
+    equalizerInputButton.setBounds(eqmix);
     // Normal buttons
     auto fileChooser = juce::Rectangle(166, 50, 30, 30);
     fileChooserButton.setBounds(fileChooser);
@@ -395,6 +404,7 @@ std::vector<juce::Component*> EQlibriumAudioProcessorEditor::getComps()
         &saveButton,
         &waveGraph,
         &playButton,
-        &replayButton
+        &replayButton,
+        &equalizerInputButton
     };
 }
