@@ -3,8 +3,14 @@
 #include <JuceHeader.h>
 #include <array>
 
+/** @brief First in first out
+ * Create some backing storage in a vector
+ */
 template<typename T>
 struct Fifo {
+    /** @brief Prepare
+     * Set and clear buffer (channel + samples)
+     */
     void prepare(int numChannel, int numSamples) {
         static_assert(std::is_same_v<T, juce::AudioBuffer<float>>, "prepare(numChannel, numSamples) should only be used when the Fifo is holding juce::AudioBuffer<float>)");
         for(auto& buffer : buffers) {
@@ -19,6 +25,9 @@ struct Fifo {
         }
     }
 
+    /** @brief Prepare
+     * 
+     */
     void prepare(size_t numElements) {
         static_assert(std::is_same_v<T, std::vector<float>>, "prepare(numElements) should only be used when the Fifo is holding std::vector<float>)");
         for(auto& buffer : buffers) {
@@ -27,6 +36,9 @@ struct Fifo {
         }
     }
 
+    /** @brief Push
+     * Push audio data into buffer
+     */
     bool push(const T& t) {
         auto write = fifo.write(1);
         if(write.blockSize1 > 0) {
@@ -36,6 +48,9 @@ struct Fifo {
         return false;
     }
 
+    /** @brief Pull
+     * Get audio buffer
+     */
     bool pull(T& t) {
         auto read = fifo.read(1);
         if(read.blockSize1 > 0) {
@@ -45,6 +60,9 @@ struct Fifo {
         return false;
     }
 
+    /** @brief Available for reading
+     * Return the number of completed buffer
+     */
     int getNumAvailableForReading() const {
         return fifo.getNumReady();
     }
@@ -119,6 +137,9 @@ enum Slope {
     Slope_48
 };
 
+/** @brief ChainSettings
+ * Holds each adjustable paramater (buttons, slope, radiobutton...)
+ */
 struct ChainSettings {
     float gainLeft = 1.f;
     float gainRight = 1.f;
@@ -147,11 +168,19 @@ using Coefficients = Filter::CoefficientsPtr;
 void updateCoefficients(Coefficients& old, const Coefficients& replacements);
 Coefficients makeLeftPeakFilter(const ChainSettings& chainSettings, double sampleRate);
 Coefficients makeRightPeakFilter(const ChainSettings& chainSettings, double sampleRate);
+
+/** @brief update
+ * Update filters
+ */
 template<int Index, typename ChainType, typename CoefficientType>
     void update(ChainType& chain, const CoefficientType& coefficients) {
     updateCoefficients(chain.template get<Index>().coefficients, coefficients[Index]);
     chain.template setBypassed<Index>(false);
 }
+
+/** @brief updateCutFilter
+ * Template for update functions vor each setted slope
+ */
 template<typename ChainType, typename CoefficientType>
 void updateCutFilter(ChainType& chain, const CoefficientType& coefficients, const Slope& slope) {
     chain.template setBypassed<0>(true);
@@ -174,6 +203,9 @@ void updateCutFilter(ChainType& chain, const CoefficientType& coefficients, cons
     }
 }
 
+/** makeLeftLowCutFilter
+ * Set left lowcut filter
+ */
 inline auto makeLeftLowCutFilter(const ChainSettings& chainSettings, double sampleRate) {
     return juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(
         chainSettings.leftLowCutFreq,
@@ -182,6 +214,9 @@ inline auto makeLeftLowCutFilter(const ChainSettings& chainSettings, double samp
     );
 }
 
+/** makeLeftHighCutFilter
+ * Set left highcut filter
+ */
 inline auto makeLeftHighCutFilter(const ChainSettings& chainSettings, double sampleRate) {
     return juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(
         chainSettings.leftHighCutFreq,
@@ -190,6 +225,9 @@ inline auto makeLeftHighCutFilter(const ChainSettings& chainSettings, double sam
     );
 }
 
+/** makeRightLowCutFilter
+ * Set right lowcut filter
+ */
 inline auto makeRightLowCutFilter(const ChainSettings& chainSettings, double sampleRate) {
     return juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(
         chainSettings.rightLowCutFreq,
@@ -198,6 +236,9 @@ inline auto makeRightLowCutFilter(const ChainSettings& chainSettings, double sam
     );
 }
 
+/** makeRightHighCutFilter
+ * Set right highcut filter
+ */
 inline auto makeRightHighCutFilter(const ChainSettings& chainSettings, double sampleRate) {
     return juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(
         chainSettings.rightHighCutFreq,
@@ -207,6 +248,9 @@ inline auto makeRightHighCutFilter(const ChainSettings& chainSettings, double sa
 }
 
 //==============================================================================
+/** @brief EQlibriumAudioProcessor
+ * Audio processor class
+ */
 class EQlibriumAudioProcessor  : public juce::AudioProcessor
 {
 public:

@@ -1,10 +1,8 @@
-# Project Documentation
-
-## Project Overview
+# Project Overview
 
 The EQlibrium application was developed for educational purposes and will no longer be supported with extensions.
 
-# Key Features
+## Key Features
 1. Equlizer visual for each audio channel L/R(filter graph, frequency graph, VU-Meter)
 2. Equlizer notch, lowpass and highpass (lowpass + highpass = bandpass)
 3. Adjustable gain for each channel L/R

@@ -176,7 +176,6 @@ void EQlibriumAudioProcessor::prepareRecord() {
         struct tm datetime = *localtime(&timestamp);
         std::string date = std::to_string(datetime.tm_year)+"_"+std::to_string(datetime.tm_mon)+"_"+std::to_string(datetime.tm_mday)+"_"
         +std::to_string(datetime.tm_hour)+"-"+std::to_string(datetime.tm_min)+"-"+std::to_string(datetime.tm_sec);
-        std::cout << date;
         file = juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentExecutableFile).getSiblingFile("records").getFullPathName()+"/record_"+date+".wav";
         file.create();
         juce::StringPairArray metaData = juce::WavAudioFormat::createBWAVMetadata("", "", "", juce::Time::getCurrentTime(), 0, "");
@@ -220,11 +219,16 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
     updateFilters();
-    juce::dsp::AudioBlock<float> block(buffer);
     if(playSource && getChainSettings(apvts).playButton) {
-        juce::AudioSourceChannelInfo info(buffer);
+        juce::AudioBuffer<float> audioBuffer;
+        audioBuffer.makeCopyOf(buffer, false);
+        juce::AudioSourceChannelInfo info(audioBuffer);
         playSource->getNextAudioBlock(info);
+        for(int i = 0; i < totalNumInputChannels; ++i){
+            buffer.addFrom(i, 0, audioBuffer, i, 0, audioBuffer.getNumSamples());
+        }
     }
+    juce::dsp::AudioBlock<float> block(buffer);
     auto leftBlock = getChainSettings(apvts).channelLeftButton ? block.getSingleChannelBlock(0) : block.getSingleChannelBlock(0).clear();
     auto rightBlock = getChainSettings(apvts).channelRightButton ? block.getSingleChannelBlock(1) : block.getSingleChannelBlock(1).clear();
     smoothLoudness(buffer);
@@ -252,6 +256,15 @@ void EQlibriumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
             rmsLevelRight.setCurrentAndTargetValue(value);
         }
     }
+    /*if(playSource && getChainSettings(apvts).playButton) {
+        juce::AudioBuffer<float> audioBuffer;
+        audioBuffer.makeCopyOf(buffer, false);
+        juce::AudioSourceChannelInfo info(audioBuffer);
+        playSource->getNextAudioBlock(info);
+        for(int i = 0; i < totalNumInputChannels; ++i){
+            buffer.addFrom(i, 0, audioBuffer, i, 0, audioBuffer.getNumSamples());
+        }
+    }*/
     recordVoice(buffer);
     previousChainSettings = getChainSettings(apvts);
 }

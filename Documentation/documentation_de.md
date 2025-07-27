@@ -1,8 +1,8 @@
-## Documentation
+# Dokumentation
 
-# Architecture overview
----
-PluginProcessor
+## Architekturübersicht
+
+### PluginProcessor
 ```mermaid
 classDiagram
 EQlibriumAudioProcessor <|-- SingleChannelSampleFifo
@@ -104,8 +104,7 @@ class Fifo{
 }
 ```
 
----
-PluginEditor
+### PluginEditor
 ```mermaid
 classDiagram
 EQlibriumAudioProcessor <|-- EQlibriumAudioProcessorEditor
@@ -409,17 +408,48 @@ class LabelPos{
 }
 ```
 
-# Signal processing
 
-# GUI
+## Signalverarbeitung
+Das Audiosignal aus unterschiedlichen Quellen (Mikrofon + Audiodatei) wird zusammen gemixt und als gemeinsamer Buffer ausgegeben.
+
+### Hoch-/Tiefpass
+Für den Hoch- und Tiefpass wird die Butterworth-Methode eingesetzt, um die Frequenz an den angegebenen Stellen von der Lautstärke zu senken. Je höher der Filter (12, 24, 36, 48), desto steiler der Abfall an der eingestellten Frequenz. (IIR-Filter)
+
+### Kerbfilter
+Der Kerbfilter wird im Grunde gänzlich von Juce erzeugt, einzig die gewünschten Änderungen müssen der Funktion makePeakFilter() übergeben werden (Anzahl der Samples, Frequenz, Qualität, Anstieg/Absenkung in dB). Um den Parameter „Qualität“ aufzuschlüsseln: Damit ist gemeint, inwieweit sich der Filter auf benachbarte Frequenzen auswirkt. Je höher der Wert in „Qualität“, desto geringfügiger werden umliegende Frequenzen mit beeinflusst. (IIR-Filter)
 
 
-# Signal flow
+## GUI
+
+### Aufnahme und abspielen
+Die GUI besteht aus drei Teilen. Im ersten Teil (obere Box) kann durch Klick auf das Ordnersymbol eine .wav- oder .mp3-Datei ausgewählt werden. Mit Klick auf das Mikrofonsymbol kann Audio aufgenommen werden. Wenn die Aufnahme aktiv ist, ist das Mikrofonsymbol grün hinterlegt. Ein erneuter Klick stoppt die Aufnahme. Bei der Aufnahme wird nicht nur Audio vom Mikrofon aufgenommen, sondern auch die Veränderungen durch den Equalizer sowie, falls ausgewählt, auch Hintergrundmusik. Auf der rechten Seite kann eine ausgewählte Audiodatei wiederholt abgespielt werden (Kreis mit zwei Pfeilen). Wenn das Symbol grün hinterlegt ist, ist die Wiederholung der Audiodatei aktiv. Die letzte „aktive“ Funktion ist das Abspielen und Pausieren der Audiodatei. Rechts daneben wird die Waveform der Audiodatei angezeigt, je ein Graph für den linken und den rechten Audiokanal.
+
+### Lautstärke und Kanäle abschalten
+Im zweiten Bereich können die Lautstärken für den linken und den rechten Kanal individuell angepasst werden. Die Schaltflächen L und R schalten die jeweiligen Kanäle komplett ab, auch für die Aufnahme. Die grüne Umrandung der Schaltfläche gibt an, dass der Kanal aktiv Audio erhält/erhalten kann. Im ausgeschalteten Zustand ist die Umrandung grau.
+
+### Equalizer
+Im dritten und größten Bereich befindet sich der Equalizer. Der Equalizer kann für jeden Kanal (Stereo) einzeln eingestellt werden. Auf der linken Seite befindet sich der Equalizer für den linken Kanal und auf der rechten Seite der Equalizer für den rechten Kanal. Mit dem Kerbfilter können gezielt Frequenzen angehoben oder verringert werden. Mit dem ersten Drehregler wird die Frequenz eingestellt, mit dem zweiten die „Breite“: Je höher der Wert, desto geringer werden nahe liegende Frequenzen mit angehoben oder gesenkt. Mit dem dritten Drehregler wird die Verstärkung oder Verringerung der Frequenz geregelt, von –24 dB bis +24 dB. Die Einstellung wird im ersten Graph unterhalb der Equalizer-Drehregler graphisch dargestellt.
+
+Unter der Kerbfilter-Einstellung befinden sich die Einstellungen für den Tief- und Hochpass. Beide zusammen können auch als „Bandpass“ genutzt werden. Der jeweils erste Drehregler gibt die Frequenz an, ab der gefiltert werden soll. Bei dem Hochpass werden tiefe Frequenzen entfernt, dementsprechend wird das Signal, das sich unterhalb der angegebenen Frequenz befindet, von der Lautstärke reduziert. Das gleiche gilt für den Tiefpass, nur umgekehrt. Der jeweils zweite Drehregler gibt an, wie stark die Absenkung pro Oktave ist. „Filtersteilheit“ einstellbar sind 12, 24, 36 und 48 dB. Je höher der Wert eingestellt ist, desto schneller sinkt die Lautstärke ab der eingestellten Frequenz ab. Beide Einstellungen werden im gleichen Graphen wie der Kerbfilter angezeigt.
+
+Unterhalb des Filtergraphen wird der Frequenzgraph angezeigt. Wird gerade Audio abgespielt oder in das Mikrofon gesprochen, werden entsprechend die Frequenzen angezeigt. Die Einstellung des Equalizers wirkt sich auch direkt auf den Frequenzgraphen aus. Zuletzt ist unter dem Frequenzgraphen ein VU-Meter, das den Pegel anzeigt. Auch das VU-Meter reagiert auf Pegeländerungen durch die Equalizer-Einstellungen.
 
 
-# Special features
-- Custom VU-Meter with delay (high to low dB)
-- Custom filter graph
-- Custom frequency graph
-- All buttons with own LookAndFeel
-- No images from external resources
+## Signalfluss
+Die Audioquellen Mikrofon und Audiodatei werden in einem Buffer vereint (sofern eine Audiodatei eingebunden ist und abgespielt wird). Danach wird der Kerbfilter pro Kanal angewandt. Das gleiche Verfahren wie bei dem Kerbfilter wird auch für den Hoch- und Tiefpass angewandt. Die Reihenfolge ist:
+
+- Kerbfilter
+- Tiefpass
+- Hochpass
+
+Anschließend, sofern die Aufnahmefunktion aktiviert ist, wird der Buffer in eine .wav-Datei geschrieben.
+
+Das Ein- und Ausschalten der Kanäle leert den Buffer für den ausgewählten Kanal. Diese Funktion befindet sich zwischen dem Mischen der Audiobuffer und der Anwendung der Filter.
+
+
+## Besonderheiten
+- Eigener VU-Meter mit Verzögerung (von hoher zu niedriger Lautstärke) L/R
+- Filtergraph L/R
+- Frequenzgraph L/R
+- Alle Buttons mit eigenem LookAndFeel
+- Keine Bilder von externen Ressourcen
