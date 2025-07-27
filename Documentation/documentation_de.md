@@ -78,6 +78,7 @@ class ChainSettings{
     +bool playButton
     +bool replayButton
     +bool recordButton
+    +Mixer mixer
     +float leftPeakFreq
     +float leftPeakGainInDecibels
     +float leftPeakQuality
@@ -88,6 +89,10 @@ class ChainSettings{
     +float leftHighCutFreq
     +float rightLowCutFreq
     +float rightHighCutFreq
+    +Slope leftLowCutSlope
+    +Slope leftHighCutSlope
+    +Slope rightLowCutSlope
+    +Slope rightHighCutSlope
     +void setPlay(bool val)
     +void setReplay(bool val)
 }
@@ -191,6 +196,7 @@ EQlibriumAudioProcessorEditor : -WaveForm waveGraph
 EQlibriumAudioProcessorEditor : -PlayButton playButton
 EQlibriumAudioProcessorEditor : -GlowImageButtons replayButton
 EQlibriumAudioProcessorEditor : -GlowImageButtons microphoneButton
+EQlibriumAudioProcessorEditor : -ComboBox equalizerInputButton
 EQlibriumAudioProcessorEditor : -using APVTS
 EQlibriumAudioProcessorEditor : -using SliderAttachment
 EQlibriumAudioProcessorEditor : -SliderAttachment leftPeakFreqSliderAttachment
@@ -217,6 +223,8 @@ EQlibriumAudioProcessorEditor : -ButtonAttachment microphoneAttachment
 EQlibriumAudioProcessorEditor : -ButtonAttachment saveAttachment
 EQlibriumAudioProcessorEditor : -ButtonAttachment playAttachment
 EQlibriumAudioProcessorEditor : -ButtonAttachment replayAttachment
+EQlibriumAudioProcessorEditor : -using ComboBoxAttachment
+EQlibriumAudioProcessorEditor : -ComboBoxAttachment equalizerInputAttachment
 EQlibriumAudioProcessorEditor : -LevelMeterComponent levelMeterLeft
 EQlibriumAudioProcessorEditor : -LevelMeterComponent levelMeterRight
 EQlibriumAudioProcessorEditor : -LookAndFeelChannelButtons lnfCh
