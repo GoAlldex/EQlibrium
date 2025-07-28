@@ -64,6 +64,24 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     replayAttachment(audioProcessor.apvts, "Replay Button", replayButton),
     equalizerInputAttachment(audioProcessor.apvts, "Equalizer Input", equalizerInputButton) 
     {
+    initParams();
+    setlnf();
+    clickAction();
+    toolTips();
+    setSize (1000, 1000);
+}
+
+EQlibriumAudioProcessorEditor::~EQlibriumAudioProcessorEditor() {
+    channelButtonLeft.setLookAndFeel(nullptr);
+    channelButtonRight.setLookAndFeel(nullptr);
+    fileChooserButton.setLookAndFeel(nullptr);
+    microphoneButton.setLookAndFeel(nullptr);
+    saveButton.setLookAndFeel(nullptr);
+    equalizerInputButton.setLookAndFeel(nullptr);
+    tooltip.setLookAndFeel(nullptr);
+}
+
+void EQlibriumAudioProcessorEditor::initParams() {
     peakFreqSliderLeft.labels.add({0.f, "20Hz"});
     peakFreqSliderLeft.labels.add({1.f, "20kHz"});
     peakGainSliderLeft.labels.add({0.f, "-24dB"});
@@ -103,6 +121,9 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     for(auto* comp : getComps()) {
         addAndMakeVisible(comp);
     }
+}
+
+void EQlibriumAudioProcessorEditor::setlnf() {
     fileChooserButton.setLookAndFeel(&lnfImgBtn);
     microphoneButton.setLookAndFeel(&lnfGlow);
     saveButton.setLookAndFeel(&lnfImgBtn);
@@ -110,6 +131,11 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     channelButtonRight.setLookAndFeel(&lnfCh);
     playButton.setLookAndFeel(&lnfPlay);
     replayButton.setLookAndFeel(&lnfGlow);
+    equalizerInputButton.setLookAndFeel(&lnfCombo);
+    tooltip.setLookAndFeel(&lnfTool);
+}
+
+void EQlibriumAudioProcessorEditor::clickAction() {
     auto safePtr = SafePointer(this);
     fileChooserButton.onClick = [safePtr]() {
         safePtr->audioProcessor.getFile();
@@ -142,15 +168,30 @@ EQlibriumAudioProcessorEditor::EQlibriumAudioProcessorEditor (EQlibriumAudioProc
     replayButton.onClick = [safePtr]() {
         safePtr->audioProcessor.loop();
     };
-    setSize (1000, 1000);
 }
 
-EQlibriumAudioProcessorEditor::~EQlibriumAudioProcessorEditor() {
-    channelButtonLeft.setLookAndFeel(nullptr);
-    channelButtonRight.setLookAndFeel(nullptr);
-    fileChooserButton.setLookAndFeel(nullptr);
-    microphoneButton.setLookAndFeel(nullptr);
-    saveButton.setLookAndFeel(nullptr);
+void EQlibriumAudioProcessorEditor::toolTips() {
+    peakFreqSliderLeft.setTooltip("Notch left frequence");
+    peakFreqSliderRight.setTooltip("Notch right frequence");
+    peakGainSliderLeft.setTooltip("Notch left gain");
+    peakGainSliderRight.setTooltip("Notch right gain");
+    peakQualitySliderLeft.setTooltip("Notch left quality");
+    peakQualitySliderRight.setTooltip("Notch right quality");
+    lowCutFreqSliderLeft.setTooltip("Highpass left frequence");
+    lowCutFreqSliderRight.setTooltip("Highpass right frequence");
+    lowCutSlopeSliderLeft.setTooltip("Highpass left Butterworth filter");
+    lowCutSlopeSliderRight.setTooltip("Highpass right Butterworth filter");
+    highCutFreqSliderLeft.setTooltip("Lowpass left frequence");
+    highCutFreqSliderRight.setTooltip("Lowpass right frequence");
+    highCutSlopeSliderLeft.setTooltip("Lowpass left Butterworth filter");
+    highCutSlopeSliderRight.setTooltip("Lowpass right Butterworth filter");
+    channelButtonLeft.setTooltip("Disable/enable left channel");
+    channelButtonRight.setTooltip("Disable/enable right channel");
+    playButton.setTooltip("Play/pause");
+    replayButton.setTooltip("Replay on/off");
+    microphoneButton.setTooltip("Record audio on/off");
+    fileChooserButton.setTooltip("Choose file .wav or .mp3");
+    equalizerInputButton.setTooltip("Both: The equalizer modifies the entire audio signal (microphone, playing audio file, external audio)\nExternal: The equalizer only modifies audio signals from external sources (microphone, external audio)\nInternal: The equalizer only modifies audio signals from the playing audio file (microphone and external sources remain unchanged)");
 }
 
 //==============================================================================
@@ -350,7 +391,7 @@ void EQlibriumAudioProcessorEditor::resized() {
     onoffR.removeFromTop(3);
     channelButtonRight.setBounds(onoffR);
     // Equlizer mix button
-    auto eqmix = juce::Rectangle(245, 177, 100, 25);
+    auto eqmix = juce::Rectangle(233, 177, 100, 37);
     equalizerInputButton.setBounds(eqmix);
     // Normal buttons
     auto fileChooser = juce::Rectangle(166, 50, 30, 30);

@@ -13,7 +13,8 @@
 #include "../graph/WaveForm.hpp"
 #include "../inputs/PlayButton.hpp"
 #include "../inputs/GlowImageButtons.hpp"
-#include "../inputs/TextButtons.hpp"
+#include "../inputs/ComboBox.hpp"
+#include "../tooltip/ToolTip.hpp"
 
 //==============================================================================
 
@@ -119,5 +120,12 @@ private:
     LookAndFeelNormalImageButtons lnfImgBtn;
     LookAndFeelPlayButton lnfPlay;
     LookAndFeelGlowButton lnfGlow;
+    LookAndFeelComboBox lnfCombo;
+    LookAndFeelToolTip lnfTool;
+    juce::TooltipWindow tooltip { this, 500 };
+    void initParams();
+    void setlnf();
+    void clickAction();
+    void toolTips();
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQlibriumAudioProcessorEditor)
 };

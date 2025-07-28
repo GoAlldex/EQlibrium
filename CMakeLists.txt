@@ -43,7 +43,8 @@ target_sources(EQlibrium
         src/graph/WaveForm.cpp
         src/inputs/PlayButton.cpp
         src/inputs/GlowImageButtons.cpp
-        src/inputs/TextButtons.cpp)
+        src/inputs/ComboBox.cpp
+        src/tooltip/ToolTip.cpp)
 
 target_compile_definitions(EQlibrium
         PUBLIC

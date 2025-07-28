@@ -135,6 +135,8 @@ PlayButton <|-- LookAndFeelPlayButton
 EQlibriumAudioProcessorEditor <|-- RotarySliderWithLabels
 RotarySliderWithLabels <|-- LookAndFeelRotarySlider
 RotarySliderWithLabels <|-- LabelPos
+EQlibriumAudioProcessorEditor <|-- LookAndFeelComboBox
+EQlibriumAudioProcessorEditor <|-- LookAndFeelToolTip
 EQlibriumAudioProcessorEditor : -EQlibriumAudioProcessor& audioProcessor
 EQlibriumAudioProcessorEditor : -Rectangle<int> window_full_rect
 EQlibriumAudioProcessorEditor : -Rectangle<int> window_micro_rect
@@ -231,10 +233,17 @@ EQlibriumAudioProcessorEditor : -LookAndFeelChannelButtons lnfCh
 EQlibriumAudioProcessorEditor : -LookAndFeelNormalImageButtons lnfImgBtn
 EQlibriumAudioProcessorEditor : -LookAndFeelPlayButton lnfPlay
 EQlibriumAudioProcessorEditor : -LookAndFeelPlayButton lnfGlow
+EQlibriumAudioProcessorEditor : -LookAndFeelComboBox lnfCombo
+EQlibriumAudioProcessorEditor : -LookAndFeelToolTip lnfTool
+EQlibriumAudioProcessorEditor : -TooltipWindow tooltip
 EQlibriumAudioProcessorEditor : +EQlibriumAudioProcessorEditor (EQlibriumAudioProcessor&)
 EQlibriumAudioProcessorEditor : +paint(Graphics&)
 EQlibriumAudioProcessorEditor : +void resized()
 EQlibriumAudioProcessorEditor : -vector<Component*> getComps()
+EQlibriumAudioProcessorEditor : -void initParams()
+EQlibriumAudioProcessorEditor : -void setlnf()
+EQlibriumAudioProcessorEditor : -void clickAction()
+EQlibriumAudioProcessorEditor : -void toolTips()
 
 class LevelMeterComponent{
     -EQlibriumAudioProcessor& audioProcessor
@@ -414,7 +423,17 @@ class LabelPos{
     +float pos
     +String label
 }
+
+class LookAndFeelComboBox{
+    +LookAndFeelComboBox()
+    +void drawComboBox(Graphics& g, int width, int height, bool isButtonDown, int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox &)
+}
+
+class LookAndFeelToolTip{
+    +void drawTooltip(Graphics& g, const juce::String& text, int width, int height)
+}
 ```
+
 
 ## Signal processing
 The audio signal from different sources (microphone + audio file) is mixed together and output as a common buffer.
@@ -463,4 +482,6 @@ If the equalizer input is set to "Both," the buffers of the microphone/external 
 - Custom filter graph L/R
 - Custom frequency graph L/R
 - All buttons with own LookAndFeel
+- Combobox with own LookAndFeel
+- Tooltip with own LookAndFeel
 - No images from external resources

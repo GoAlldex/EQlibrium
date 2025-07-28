@@ -138,7 +138,7 @@ enum Slope {
 };
 
 enum Mixer {
-    Both,
+    Both ,
     Extern,
     Intern
 };
