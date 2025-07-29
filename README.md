@@ -44,6 +44,8 @@ This project uses CMake as the primary build system. Make sure you execute cmake
    cmake --build . --config Release --target EQlibrium_VST3 -j [CPU thread count]
    ```
 
+VST3: make sure you copy the folders images and records into "EQlibrium.vst3/Contents/x86_64-win/" otherwise you are missing buttons.
+VST3: the record function is not available.
 ---
 
 ## Dependencies
